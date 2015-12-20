@@ -8,7 +8,7 @@ header:
 permalink: "/headers/"
 ---
 <ul>
-    {% for post in site.tags.header %}
-    <li><a href="{{ site.url }}{{ post.url }}">{{ post.title }}</a></li>
+    {% for post in site.tags.project %}
+    <li><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></li>
     {% endfor %}
 </ul>
