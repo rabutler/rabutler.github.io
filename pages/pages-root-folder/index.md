@@ -19,7 +19,7 @@ widget2:
   image: widget-projects-303x182.jpg
 widget3:
   title: "More about me."
-  url: 'https://rabutler.github.io/cv/'
+  url: 'https://rabutler.github.io/about-me/'
   image: widget-aboutMe-303x182.jpg
   text: 'You can find out more about me here.'
 #

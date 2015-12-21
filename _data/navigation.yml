@@ -11,20 +11,23 @@
   - title: "Historical Mortgage Rates"
     url: "/projects/historical-mortgage-interest/"
 
-- title: "CV"
-  url: "/cv/"
+- title: "About Me"
+  url: "/about-me/"
   side: left
+  dropdown:
+  - title: "CV"
+    url: "/about-me/CV"
 
 - title: Trips
   url: "/trips/"
   side: left
 
-- title: Blog
-  url: "/blog/"
-  side: left
-  dropdown:
-  - title: "Blog Archive"
-    url: "/blog/archive/"
+#- title: Blog
+#  url: "/blog/"
+#  side: left
+#  dropdown:
+#  - title: "Blog Archive"
+#    url: "/blog/archive/"
 
 - title: "Contact"
   url: "/contact/"
