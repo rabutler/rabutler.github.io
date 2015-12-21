@@ -26,7 +26,7 @@
               {% elsif link.url == '#' %}
                 {% assign domain = '' %}
               {% else %}
-                {% assign domain = site.baseurl %}
+                {% assign domain = '' %}
               {% endif %}
 
           {% comment %}   If there are links for right side begin   {% endcomment %}
@@ -49,7 +49,7 @@
                       {% if dropdown_link.url contains 'http' %}
                         {% assign domain = '' %}
                         {% else %}
-                        {% assign domain = site.baseurl %}
+                        {% assign domain = '' %}
                       {% endif %}
 
                       <li><a href="{{ domain }}{{ site.baseurl }}{{ dropdown_link.url }}"{% if dropdown_link.url contains 'http' %} target="_blank"{% endif %}>{{ dropdown_link.title | escape }}</a></li>
@@ -80,7 +80,7 @@
               {% elsif link.url == '#' %}
                 {% assign domain = '' %}
               {% else %}
-                {% assign domain = site.baseurl %}
+                {% assign domain = '' %}
               {% endif %}
 
           {% comment %}   If there are links for left side begin   {% endcomment %}
@@ -103,7 +103,7 @@
                       {% if dropdown_link.url contains 'http' %}
                         {% assign domain = '' %}
                         {% else %}
-                        {% assign domain = site.baseurl %}
+                        {% assign domain = '' %}
                       {% endif %}
 
                       <li><a href="{{ domain }}{{ site.baseurl }}{{ dropdown_link.url }}"{% if dropdown_link.url contains 'http' %} target="_blank"{% endif %}>{{ dropdown_link.title | escape }}</a></li>
