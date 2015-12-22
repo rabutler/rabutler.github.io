@@ -11,14 +11,14 @@ widget1:
   title: "My Trips"
   url: '/trips/'
   image: widget-trips-303x182.jpg
-  text: 'Check out some of my cool trips.'
+  text: 'I like to travel. Check out some of the cool trips I have taken.'
 widget2:
   title: "My Small Projects"
   url: '/projects/'
-  text: 'I like to try things out and learn new R packages by making small projects. You can check them out here.'
+  text: 'I enjoy coding, mostly in R. I also enjoy exploring data and playing with visualizations. Check out some of my small projects.'
   image: widget-projects-303x182.jpg
 widget3:
-  title: "More about me."
+  title: "More About Me"
   url: '/about-me/'
   image: widget-aboutMe-303x182.jpg
   text: 'You can find out more about me here.'

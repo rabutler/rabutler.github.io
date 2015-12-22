@@ -2,6 +2,10 @@
   url: "/"
   side: left
 
+- title: Trips
+  url: "/trips/"
+  side: left
+  
 - title: "Projects"
   url: "/projects/"
   side: left
@@ -17,10 +21,6 @@
   dropdown:
   - title: "CV"
     url: "/about-me/CV"
-
-- title: Trips
-  url: "/trips/"
-  side: left
 
 #- title: Blog
 #  url: "/blog/"
