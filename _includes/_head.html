@@ -3,6 +3,7 @@
 	<title>{% if page.meta_title %}{{ page.meta_title }}{% elsif page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}</title>
 	<link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/assets/css/styles_feeling_responsive.css" />
 	<script src="{{ site.baseurl }}/assets/js/modernizr.min.js"></script>
+	<script src="{{ site.baseurl }}/assets/lib/jquery/jquery-2.1.1.min.js"></script>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js"></script>
 	<script>
@@ -25,6 +26,8 @@
 
 	{% include _favicon.html %}
 
+	{% if page.add_ggvis == true %} {% include _ggvis_scripts.html %} {% endif %}
+	
 	<!-- Facebook Optimization -->
 	<meta property="og:locale" content="{% if site.og_locale == nil %}en_EN{% else %}{{ site.og_locale }}{% endif %}" />
 	{% if site.og_type %}<meta property="og:type" content="website" />{% endif %}

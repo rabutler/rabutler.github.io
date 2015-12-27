@@ -4,8 +4,21 @@ $('audio,video').mediaelementplayer();
 </script>
 {% endif %}
 
+<script src="/assets/lib/backstretch/jquery.backstretch.min.js"></script>
+<script src="/assets/lib/fastclick/fastclick.min.js"></script>
 
-<script src="{{ site.baseurl }}/assets/js/javascript.min.js"></script>
+<script src="/assets/lib/foundation/foundation.js"></script>
+<script src="/assets/lib/foundation/foundation.accordion.js"></script>
+<script src="/assets/lib/foundation/foundation.clearing.js"></script>
+<script src="/assets/lib/foundation/foundation.dropdown.js"></script>
+<script src="/assets/lib/foundation/foundation.equalizer.js"></script>
+<script src="/assets/lib/foundation/foundation.magellan.js"></script>
+<script src="/assets/lib/foundation/foundation.topbar.js"></script>
+
+<!-- initialize foundation -->
+<script>
+  $(document).foundation();
+</script>
 
 
 {% if page.header.image_fullwidth %}
