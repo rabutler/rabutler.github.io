@@ -107,7 +107,7 @@ defaults:
       show_meta: false 	# Hide metadata for all pages
       # sidebar:    		# Possible values › left, right › by default there will be no sidebar
       comments: false
-      author: phlow     # Default author for pages
+      author: abutler     # Default author for pages
   -
     scope:
       path: ""
@@ -116,7 +116,7 @@ defaults:
       show_meta: true   # Show metadata for all posts
       # sidebar:        # Possible values › left, right › by default there will be no sidebar
       comments: false
-      author: phlow     # Default author for posts
+      author: abutler     # Default author for posts
 
 
 
@@ -161,7 +161,7 @@ apple-touch-icon-120x120-precomposed:   "apple-touch-icon-120x120-precomposed.pn
 apple-touch-icon-114x114-precomposed:   "apple-touch-icon-114x114-precomposed.png"
 apple-touch-icon-76x76-precomposed:     "apple-touch-icon-76x76-precomposed.png"
 apple-touch-icon-72x72-precomposed:     "apple-touch-icon-72x72-precomposed.png"
-apple-touch-icon-precomposed:           "apple-touch-icon-precomposed.png"
+apple-touch-icon-precomposed:           "apple-touch-icon-precomposed.png"			# Size 57x57
 msapplication_tileimage:                "msapplication_tileimage.png"               # Size 144x144
 msapplication_tilecolor:                "#fabb00"
 
