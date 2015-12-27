@@ -7,7 +7,7 @@
 # Resource › http://blog.sorryapp.com/blogging-with-jekyll/2014/02/06/adding-authors-to-your-jekyll-site.html
 abutler: # replace this with your info
   name: "Alan Butler"
-  siterole: "webmaster, developer, copywriter, designer"
+  siterole: "webmaster, developer"
   uri: http://rabutler.githubs.io
   email:
   twitter: "@r_alanb"
