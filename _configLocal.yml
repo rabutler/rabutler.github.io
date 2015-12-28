@@ -1,2 +1,5 @@
 # special path for urls when serving locally
 urlimg: '/images/'
+
+# Disable when not in production
+google_analytics_tracking_id:
