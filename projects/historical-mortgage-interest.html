@@ -1,0 +1,751 @@
+---
+layout: page
+subheadline:  "A quick analysis of historical mortgage interest rates"
+title:  "Historical Changes in Mortgage Rates"
+teaser: ""
+header: no
+add_ggvis: true
+permalink: "/projects/historical-mortgage-interest/"
+---
+
+<div class="container-fluid main-container">
+
+<div id="background" class="section level2">
+<h2>Background</h2>
+<p>My mom is getting ready to sell her house and by a new house, and has some concerns about how much interest rates may go up before she can buy a house. I really don’t know much about these things, so I performed a Quick analysis of historical changes in mortgage rates to see how much they <em>could</em> go up over the next few months. There is nothing fancy here, no model fitting, just looking at the fastest they have changed over several months historically and using that to come up with a worst case change for the next few months.</p>
+<p><strong>I am not a financial analyst, and I understand there is no way for a mortal like myself to predict how interest rates will change in the next few months. I also understand there are many, many factors that lead to these changes, but will not even pretend to understand what they are. This is only an analysis of historical changes.</strong></p>
+</div>
+<div id="data" class="section level2">
+<h2>Data</h2>
+<p><a href="'http://www.freddiemac.com/pmms/pmms30.htm'">Freddie Mac</a> provides historical data on their website and in Excel format. Both the website and excel file are in formats that are not conducive to analysis. So, I decided to get some practice with the <code>rvest</code> package and grab the data straight from the table on the website since it was going to take the same amount of reformating as using the Excel files.</p>
+<p>I chose to use only the 30-year fixed rate data, as that is the type of mortage she will use.</p>
+<p>It is super easy to read in the data from the table once you figure out the correct css selector (see the <code>rvest</code> selector gadget vignette).</p>
+<p><em>Note that these next two code chucks are not evaluated everytime, since at the end, I save the data. No use reading the html everytime.</em></p>
+<pre class="r"><code>library(lubridate) 
+library(rvest) 
+library(reshape2)
+library(dplyr)
+
+ws &lt;- 'http://www.freddiemac.com/pmms/pmms30.htm'
+cssSelector &lt;- 'tbody+ tbody td'
+
+# read full website
+wsHtml &lt;- read_html(ws)
+# there are 11 columns on the website including the month labels
+wsNcol &lt;- 11
+
+# parse table
+mtg &lt;- wsHtml %&gt;% 
+  rvest::html_nodes(cssSelector) %&gt;%
+  rvest::html_text() %&gt;% matrix(ncol = wsNcol, byrow = T)</code></pre>
+<p><code>mtg</code> now looks like the table on the website, but we want to get it in a long table format. We know that new years start every 13 rows; we also know that the current year is the first year of data and 1971 is the last year of data. So we cleaned the data up a little bit, removing the “points” data since we only care about the interest rates, removing the annual averages, and ensuring the dates are end of month format.</p>
+<pre class="r"><code># drop the pts, which is every second column
+mtg &lt;- mtg[,-seq(3,ncol(mtg),2)]
+# loop over every 13 rows and cbind them to the original data to create a matrix of 
+# months x years
+tmpMtg &lt;- mtg[1:13,]
+mtg &lt;- mtg[-(1:13),]
+for(i in 1:(nrow(mtg)/13)){
+  tmpMtg &lt;- cbind(tmpMtg,mtg[1:13,2:ncol(mtg)])
+  mtg &lt;- mtg[-(1:13),]
+}
+
+# remove the annual average row, and the months as a column of data
+mtg &lt;- tmpMtg[1:12,2:ncol(tmpMtg)]
+rownames(mtg) &lt;- 1:12 # january - december
+colnames(mtg) &lt;- 2015:1971 # should probably make this so it is not hard coded
+rm(tmpMtg)
+
+# melt to long format and make month-year into single variable
+mtg &lt;- mtg %&gt;% reshape2::melt(varnames = c('month','year'), value.name = 'rate') %&gt;%
+  dplyr::mutate(yearMon = paste(year,month,'01',sep = '-')) %&gt;% 
+  dplyr::select(one_of('yearMon','rate'))
+
+# a quick funtion to convert from beginning-of-month dates to end-of-months dates
+last_day &lt;- function(date) {
+  ceiling_date(date, &quot;month&quot;) + months(1) - days(1)
+}
+mtg$rate &lt;- as.numeric(as.character(mtg$rate))
+mtg$yearMon &lt;- last_day(lubridate::ymd(mtg$yearMon))
+
+# remove na's from data, and then arrange from oldest to newest
+mtg &lt;- mtg %&gt;% filter(!is.na(rate)) %&gt;% arrange(yearMon)
+
+# and save the data so I don't have to load it from the web every time
+save(mtg, file = 'mortgageData.RData')</code></pre>
+</div>
+<div id="analysis" class="section level2">
+<h2>Analysis</h2>
+<p>The main goal was to answer the question: at worst, how much could interest rates increase over the next 1-6 months?</p>
+<p>But what good analysis doesn’t start with a simple plot of the data?</p>
+<p><div id="plot_id466914355-container" class="ggvis-output-container">
+<div id="plot_id466914355" class="ggvis-output"></div>
+<div class="plot-gear-icon">
+<nav class="ggvis-control">
+<a class="ggvis-dropdown-toggle" title="Controls" onclick="return false;"></a>
+<ul class="ggvis-dropdown">
+<li>
+Renderer: 
+<a id="plot_id466914355_renderer_svg" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id466914355" data-renderer="svg">SVG</a>
+ | 
+<a id="plot_id466914355_renderer_canvas" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id466914355" data-renderer="canvas">Canvas</a>
+</li>
+<li>
+<a id="plot_id466914355_download" class="ggvis-download" data-plot-id="plot_id466914355">Download</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<script type="text/javascript">
+var plot_id466914355_spec = {
+  "data": [
+    {
+      "name": ".0/arrange1",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "yearMon": "number",
+          "rate": "number"
+        }
+      },
+      "values": "\"yearMon\",\"rate\"\n41817600000,7.31\n4.4496e+10,7.43\n4.7088e+10,7.53\n49766400000,7.6\n52444800000,7.7\n55036800000,7.69\n57715200000,7.63\n60307200000,7.55\n62985600000,7.48\n6.5664e+10,7.44\n68169600000,7.32\n7.0848e+10,7.29\n7.344e+10,7.29\n76118400000,7.37\n78710400000,7.37\n81388800000,7.4\n84067200000,7.4\n86659200000,7.42\n89337600000,7.42\n91929600000,7.43\n9.4608e+10,7.44\n97286400000,7.44\n99705600000,7.44\n1.02384e+11,7.46\n1.04976e+11,7.54\n107654400000,7.65\n110246400000,7.73\n112924800000,8.05\n115603200000,8.5\n118195200000,8.82\n120873600000,8.77\n123465600000,8.58\n1.26144e+11,8.54\n128822400000,8.54\n131241600000,8.46\n1.3392e+11,8.41\n1.36512e+11,8.58\n139190400000,8.97\n141782400000,9.09\n144460800000,9.28\n147139200000,9.59\n149731200000,9.96\n152409600000,9.98\n155001600000,9.79\n1.5768e+11,9.62\n160358400000,9.43\n162777600000,9.1\n1.65456e+11,8.89\n1.68048e+11,8.82\n170726400000,8.91\n173318400000,8.89\n175996800000,8.89\n178675200000,8.94\n181267200000,9.12\n183945600000,9.22\n186537600000,9.15\n1.89216e+11,9.1\n191894400000,9.02\n1.944e+11,8.81\n197078400000,8.76\n199670400000,8.73\n202348800000,8.76\n204940800000,8.85\n207619200000,8.93\n210297600000,9\n212889600000,8.98\n2.15568e+11,8.92\n2.1816e+11,8.81\n220838400000,8.79\n223516800000,8.72\n2.25936e+11,8.67\n228614400000,8.69\n231206400000,8.75\n233884800000,8.83\n236476800000,8.86\n239155200000,8.94\n241833600000,8.94\n244425600000,8.9\n2.47104e+11,8.92\n2.49696e+11,8.92\n252374400000,8.96\n255052800000,9.01\n2.57472e+11,9.14\n260150400000,9.2\n262742400000,9.35\n265420800000,9.57\n268012800000,9.71\n270691200000,9.74\n273369600000,9.78\n275961600000,9.76\n2.7864e+11,9.86\n2.81232e+11,10.11\n283910400000,10.35\n286588800000,10.39\n2.89008e+11,10.41\n291686400000,10.43\n294278400000,10.5\n296956800000,10.69\n299548800000,11.04\n302227200000,11.09\n304905600000,11.09\n307497600000,11.3\n3.10176e+11,11.64\n3.12768e+11,12.83\n315446400000,12.9\n318124800000,12.88\n320630400000,13.04\n323308800000,15.28\n325900800000,16.32\n328579200000,14.26\n331171200000,12.71\n333849600000,12.19\n3.36528e+11,12.56\n3.3912e+11,13.2\n341798400000,13.79\n344390400000,14.21\n347068800000,14.79\n349747200000,14.9\n352166400000,15.13\n354844800000,15.4\n357436800000,15.58\n360115200000,16.4\n362707200000,16.7\n365385600000,16.83\n3.68064e+11,17.28\n3.70656e+11,18.16\n373334400000,18.45\n375926400000,17.82\n378604800000,16.95\n381283200000,17.48\n383702400000,17.6\n386380800000,17.16\n388972800000,16.89\n391651200000,16.68\n394243200000,16.7\n396921600000,16.82\n3.996e+11,16.27\n4.02192e+11,15.43\n404870400000,14.61\n407462400000,13.82\n410140800000,13.62\n412819200000,13.25\n415238400000,13.04\n417916800000,12.8\n420508800000,12.78\n423187200000,12.63\n425779200000,12.87\n428457600000,13.43\n4.31136e+11,13.81\n4.33728e+11,13.73\n436406400000,13.54\n438998400000,13.44\n441676800000,13.42\n444355200000,13.37\n446860800000,13.23\n449539200000,13.39\n452131200000,13.65\n454809600000,13.94\n457401600000,14.42\n4.6008e+11,14.67\n462758400000,14.47\n465350400000,14.35\n468028800000,14.13\n470620800000,13.64\n473299200000,13.18\n475977600000,13.08\n478396800000,12.92\n481075200000,13.17\n483667200000,13.2\n486345600000,12.91\n488937600000,12.22\n4.91616e+11,12.03\n494294400000,12.19\n496886400000,12.19\n499564800000,12.14\n502156800000,11.78\n504835200000,11.26\n507513600000,10.89\n509932800000,10.71\n512611200000,10.08\n515203200000,9.94\n517881600000,10.15\n520473600000,10.69\n5.23152e+11,10.51\n525830400000,10.2\n528422400000,10.01\n531100800000,9.98\n533692800000,9.7\n536371200000,9.32\n539049600000,9.2\n541468800000,9.08\n544147200000,9.04\n546739200000,9.83\n549417600000,10.6\n552009600000,10.54\n5.54688e+11,10.28\n557366400000,10.33\n559958400000,10.89\n562636800000,11.26\n565228800000,10.65\n567907200000,10.64\n570585600000,10.38\n573091200000,9.89\n575769600000,9.93\n578361600000,10.2\n5.8104e+11,10.46\n5.83632e+11,10.46\n586310400000,10.43\n588988800000,10.6\n591580800000,10.48\n594259200000,10.3\n596851200000,10.27\n599529600000,10.61\n6.02208e+11,10.73\n604627200000,10.65\n607305600000,11.03\n609897600000,11.05\n6.12576e+11,10.77\n6.15168e+11,10.2\n617846400000,9.88\n620524800000,9.99\n623116800000,10.13\n625795200000,9.95\n628387200000,9.77\n631065600000,9.74\n6.33744e+11,9.9\n636163200000,10.2\n638841600000,10.27\n641433600000,10.37\n6.44112e+11,10.48\n6.46704e+11,10.16\n649382400000,10.04\n652060800000,10.1\n654652800000,10.18\n657331200000,10.17\n659923200000,10.01\n662601600000,9.67\n6.6528e+11,9.64\n667699200000,9.37\n670377600000,9.5\n672969600000,9.5\n6.75648e+11,9.47\n6.7824e+11,9.62\n680918400000,9.58\n683596800000,9.24\n686188800000,9.01\n688867200000,8.86\n691459200000,8.71\n694137600000,8.5\n6.96816e+11,8.43\n699321600000,8.76\n7.02e+11,8.94\n7.04592e+11,8.85\n707270400000,8.67\n709862400000,8.51\n712540800000,8.13\n715219200000,7.98\n717811200000,7.92\n720489600000,8.09\n723081600000,8.31\n7.2576e+11,8.21\n728438400000,7.99\n730857600000,7.68\n7.33536e+11,7.5\n7.36128e+11,7.46\n738806400000,7.47\n741398400000,7.42\n744076800000,7.21\n746755200000,7.11\n749347200000,6.91\n752025600000,6.83\n754617600000,7.16\n7.57296e+11,7.17\n759974400000,7.07\n762393600000,7.15\n7.65072e+11,7.68\n7.67664e+11,8.32\n770342400000,8.6\n772934400000,8.4\n775612800000,8.61\n778291200000,8.51\n780883200000,8.64\n783561600000,8.93\n786153600000,9.17\n7.88832e+11,9.2\n791510400000,9.15\n793929600000,8.83\n7.96608e+11,8.46\n7.992e+11,8.32\n801878400000,7.96\n804470400000,7.57\n807148800000,7.61\n809827200000,7.86\n812419200000,7.64\n815097600000,7.48\n817689600000,7.38\n8.20368e+11,7.2\n823046400000,7.03\n8.25552e+11,7.08\n828230400000,7.62\n830822400000,7.93\n833500800000,8.07\n836092800000,8.32\n838771200000,8.25\n841449600000,8\n844041600000,8.23\n8.4672e+11,7.92\n8.49312e+11,7.62\n851990400000,7.6\n854668800000,7.82\n8.57088e+11,7.65\n859766400000,7.9\n862358400000,8.14\n865036800000,7.94\n867628800000,7.69\n870307200000,7.5\n872985600000,7.48\n875577600000,7.43\n8.78256e+11,7.29\n8.80848e+11,7.21\n883526400000,7.1\n886204800000,6.99\n8.88624e+11,7.04\n891302400000,7.13\n893894400000,7.14\n896572800000,7.14\n899164800000,7\n901843200000,6.95\n904521600000,6.92\n907113600000,6.72\n9.09792e+11,6.71\n9.12384e+11,6.87\n915062400000,6.74\n917740800000,6.79\n9.2016e+11,6.81\n922838400000,7.04\n925430400000,6.92\n928108800000,7.15\n930700800000,7.55\n933379200000,7.63\n936057600000,7.94\n938649600000,7.82\n9.41328e+11,7.85\n9.4392e+11,7.74\n946598400000,7.91\n949276800000,8.21\n951782400000,8.33\n954460800000,8.24\n957052800000,8.15\n959731200000,8.52\n962323200000,8.29\n965001600000,8.15\n9.6768e+11,8.03\n9.70272e+11,7.91\n972950400000,7.8\n975542400000,7.75\n978220800000,7.38\n980899200000,7.03\n983318400000,7.05\n985996800000,6.95\n988588800000,7.08\n991267200000,7.15\n993859200000,7.16\n996537600000,7.13\n9.99216e+11,6.95\n1.001808e+12,6.82\n1004486400000,6.62\n1007078400000,6.66\n1009756800000,7.07\n1012435200000,7\n1014854400000,6.89\n1017532800000,7.01\n1020124800000,6.99\n1022803200000,6.81\n1025395200000,6.65\n1028073600000,6.49\n1.030752e+12,6.29\n1.033344e+12,6.09\n1036022400000,6.11\n1038614400000,6.07\n1041292800000,6.05\n1043971200000,5.92\n1046390400000,5.84\n1049068800000,5.75\n1051660800000,5.81\n1054339200000,5.48\n1056931200000,5.23\n1059609600000,5.63\n1.062288e+12,6.26\n1.06488e+12,6.15\n1067558400000,5.95\n1070150400000,5.93\n1072828800000,5.88\n1075507200000,5.71\n1078012800000,5.64\n1080691200000,5.45\n1083283200000,5.83\n1085961600000,6.27\n1088553600000,6.29\n1.091232e+12,6.06\n1093910400000,5.87\n1096502400000,5.75\n1099180800000,5.72\n1101772800000,5.73\n1104451200000,5.75\n1107129600000,5.71\n1109548800000,5.63\n1112227200000,5.93\n1114819200000,5.86\n1117497600000,5.72\n1120089600000,5.58\n1.122768e+12,5.7\n1125446400000,5.82\n1128038400000,5.77\n1130716800000,6.07\n1133308800000,6.33\n1135987200000,6.27\n1138665600000,6.15\n1141084800000,6.25\n1143763200000,6.32\n1146355200000,6.51\n1149033600000,6.6\n1151625600000,6.68\n1.154304e+12,6.76\n1156982400000,6.52\n1159574400000,6.4\n1162252800000,6.36\n1164844800000,6.24\n1167523200000,6.14\n1170201600000,6.22\n1172620800000,6.29\n1175299200000,6.16\n1177891200000,6.18\n1180569600000,6.26\n1183161600000,6.66\n1.18584e+12,6.7\n1188518400000,6.57\n1191110400000,6.38\n1193788800000,6.38\n1196380800000,6.21\n1199059200000,6.1\n1201737600000,5.76\n1204243200000,5.92\n1206921600000,5.97\n1209513600000,5.92\n1.212192e+12,6.04\n1.214784e+12,6.32\n1217462400000,6.43\n1220140800000,6.48\n1222732800000,6.04\n1225411200000,6.2\n1228003200000,6.09\n1230681600000,5.29\n1.23336e+12,5.05\n1235779200000,5.13\n1238457600000,5\n1241049600000,4.81\n1.243728e+12,4.86\n1.24632e+12,5.42\n1248998400000,5.22\n1251676800000,5.19\n1254268800000,5.06\n1256947200000,4.95\n1259539200000,4.88\n1262217600000,4.93\n1.264896e+12,5.03\n1267315200000,4.99\n1269993600000,4.97\n1272585600000,5.1\n1.275264e+12,4.89\n1.277856e+12,4.74\n1280534400000,4.56\n1283212800000,4.43\n1285804800000,4.35\n1288483200000,4.23\n1291075200000,4.3\n1293753600000,4.71\n1.296432e+12,4.76\n1298851200000,4.95\n1301529600000,4.84\n1304121600000,4.84\n1.3068e+12,4.64\n1.309392e+12,4.51\n1312070400000,4.55\n1314748800000,4.27\n1317340800000,4.11\n1320019200000,4.07\n1322611200000,3.99\n1325289600000,3.96\n1.327968e+12,3.92\n1330473600000,3.89\n1.333152e+12,3.95\n1.335744e+12,3.91\n1338422400000,3.8\n1341014400000,3.68\n1343692800000,3.55\n1346371200000,3.6\n1348963200000,3.5\n1351641600000,3.38\n1354233600000,3.35\n1.356912e+12,3.35\n1359590400000,3.41\n1362009600000,3.53\n1.364688e+12,3.57\n1.36728e+12,3.45\n1369958400000,3.54\n1372550400000,4.07\n1375228800000,4.37\n1377907200000,4.46\n1380499200000,4.49\n1383177600000,4.19\n1385769600000,4.26\n1.388448e+12,4.46\n1391126400000,4.43\n1393545600000,4.3\n1.396224e+12,4.34\n1.398816e+12,4.34\n1401494400000,4.19\n1404086400000,4.16\n1406764800000,4.13\n1409443200000,4.12\n1412035200000,4.16\n1414713600000,4.04\n1417305600000,4\n1.419984e+12,3.86\n1422662400000,3.67\n1425081600000,3.71\n1.42776e+12,3.77\n1.430352e+12,3.67\n1433030400000,3.84\n1435622400000,3.98\n1438300800000,4.05\n1440979200000,3.91\n1443571200000,3.89\n1446249600000,3.8\n1448841600000,3.94"
+    },
+    {
+      "name": "scale/x",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "domain": "number"
+        }
+      },
+      "values": "\"domain\"\n-28533600000\n1519192800000"
+    },
+    {
+      "name": "scale/y",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "domain": "number"
+        }
+      },
+      "values": "\"domain\"\n2.595\n19.205"
+    }
+  ],
+  "scales": [
+    {
+      "domain": {
+        "data": "scale/x",
+        "field": "data.domain"
+      },
+      "name": "x",
+      "nice": "month",
+      "type": "time",
+      "clamp": false,
+      "range": "width"
+    },
+    {
+      "name": "y",
+      "domain": {
+        "data": "scale/y",
+        "field": "data.domain"
+      },
+      "zero": false,
+      "nice": false,
+      "clamp": false,
+      "range": "height"
+    }
+  ],
+  "marks": [
+    {
+      "type": "line",
+      "properties": {
+        "update": {
+          "stroke": {
+            "value": "#000000"
+          },
+          "x": {
+            "scale": "x",
+            "field": "data.yearMon"
+          },
+          "y": {
+            "scale": "y",
+            "field": "data.rate"
+          }
+        },
+        "ggvis": {
+          "data": {
+            "value": ".0/arrange1"
+          }
+        }
+      },
+      "from": {
+        "data": ".0/arrange1"
+      }
+    }
+  ],
+  "legends": [],
+  "axes": [
+    {
+      "type": "x",
+      "scale": "x",
+      "orient": "bottom",
+      "title": "Date",
+      "layer": "back",
+      "grid": true
+    },
+    {
+      "type": "y",
+      "scale": "y",
+      "orient": "left",
+      "title": "Rate [%]",
+      "layer": "back",
+      "grid": true
+    }
+  ],
+  "padding": null,
+  "ggvis_opts": {
+    "keep_aspect": false,
+    "resizable": true,
+    "padding": {},
+    "duration": 250,
+    "renderer": "svg",
+    "hover_duration": 0,
+    "width": 672,
+    "height": 480
+  },
+  "handlers": null
+};
+ggvis.getPlot("plot_id466914355").parseSpec(plot_id466914355_spec);
+</script></p>
+<p>To answer the question, we used the historical data to see how much the interest rates could change in 1 to 6 months. We decided to check increases and decreases; the logic here is that if rates have fallen that fast in a set time period, then they <em>could</em> rise that fast in the same period. Maybe?</p>
+<p>The <code>findMaxChange</code> function to compute the biggest changes in a given period:</p>
+<pre class="r"><code>source('computationFunctions.R')
+findMaxChange</code></pre>
+<pre><code>## function (nMonths, xx) 
+## {
+##     zz &lt;- xx[(nMonths + 1):length(xx)] - xx[1:(length(xx) - nMonths)]
+##     range(zz)
+## }</code></pre>
+<p>We called this for 1-6 months, and formated the results to play nicely with plotting.</p>
+<pre class="r"><code>maxChange &lt;- abs(simplify2array(lapply(1:6, findMaxChange, mtg$rate)))
+colnames(maxChange) &lt;- 1:6
+rownames(maxChange) &lt;- c('Biggest Decrease','Biggest Increase')
+maxChange &lt;- maxChange %&gt;% 
+  reshape2::melt(varnames = c('change','nMonths')) </code></pre>
+<p>A plot of the largest increases and decreases in interest rates for 1-6 months: <div id="plot_id719784954-container" class="ggvis-output-container">
+<div id="plot_id719784954" class="ggvis-output"></div>
+<div class="plot-gear-icon">
+<nav class="ggvis-control">
+<a class="ggvis-dropdown-toggle" title="Controls" onclick="return false;"></a>
+<ul class="ggvis-dropdown">
+<li>
+Renderer: 
+<a id="plot_id719784954_renderer_svg" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id719784954" data-renderer="svg">SVG</a>
+ | 
+<a id="plot_id719784954_renderer_canvas" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id719784954" data-renderer="canvas">Canvas</a>
+</li>
+<li>
+<a id="plot_id719784954_download" class="ggvis-download" data-plot-id="plot_id719784954">Download</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<script type="text/javascript">
+var plot_id719784954_spec = {
+  "data": [
+    {
+      "name": ".0",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "value": "number"
+        }
+      },
+      "values": "\"change\",\"factor(nMonths)\",\"value\"\n\"Biggest Decrease\",\"1\",2.06\n\"Biggest Increase\",\"1\",2.24\n\"Biggest Decrease\",\"2\",3.61\n\"Biggest Increase\",\"2\",3.28\n\"Biggest Decrease\",\"3\",4.13\n\"Biggest Increase\",\"3\",3.44\n\"Biggest Decrease\",\"4\",3.76\n\"Biggest Increase\",\"4\",3.42\n\"Biggest Decrease\",\"5\",3.2\n\"Biggest Increase\",\"5\",3.64\n\"Biggest Decrease\",\"6\",3.57\n\"Biggest Increase\",\"6\",4.68"
+    },
+    {
+      "name": "scale/fill",
+      "format": {
+        "type": "csv",
+        "parse": {}
+      },
+      "values": "\"domain\"\n\"Biggest Decrease\"\n\"Biggest Increase\""
+    },
+    {
+      "name": "scale/x",
+      "format": {
+        "type": "csv",
+        "parse": {}
+      },
+      "values": "\"domain\"\n\"1\"\n\"2\"\n\"3\"\n\"4\"\n\"5\"\n\"6\""
+    },
+    {
+      "name": "scale/y",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "domain": "number"
+        }
+      },
+      "values": "\"domain\"\n1.929\n4.811"
+    }
+  ],
+  "scales": [
+    {
+      "name": "fill",
+      "type": "ordinal",
+      "domain": {
+        "data": "scale/fill",
+        "field": "data.domain"
+      },
+      "points": true,
+      "sort": false,
+      "range": "category10"
+    },
+    {
+      "name": "x",
+      "type": "ordinal",
+      "domain": {
+        "data": "scale/x",
+        "field": "data.domain"
+      },
+      "points": true,
+      "sort": false,
+      "range": "width",
+      "padding": 0.5
+    },
+    {
+      "name": "y",
+      "domain": {
+        "data": "scale/y",
+        "field": "data.domain"
+      },
+      "zero": false,
+      "nice": false,
+      "clamp": false,
+      "range": "height"
+    }
+  ],
+  "marks": [
+    {
+      "type": "symbol",
+      "properties": {
+        "update": {
+          "fill": {
+            "scale": "fill",
+            "field": "data.change"
+          },
+          "x": {
+            "scale": "x",
+            "field": "data.factor(nMonths)"
+          },
+          "y": {
+            "scale": "y",
+            "field": "data.value"
+          },
+          "size": {
+            "value": 70
+          }
+        },
+        "ggvis": {
+          "data": {
+            "value": ".0"
+          }
+        }
+      },
+      "from": {
+        "data": ".0"
+      }
+    }
+  ],
+  "legends": [
+    {
+      "orient": "right",
+      "title": "Change in Rates",
+      "fill": "fill"
+    }
+  ],
+  "axes": [
+    {
+      "type": "y",
+      "scale": "y",
+      "orient": "left",
+      "title": "Change in Interest Rates [%]",
+      "layer": "back",
+      "grid": true
+    },
+    {
+      "type": "x",
+      "scale": "x",
+      "orient": "bottom",
+      "title": "Number of Months",
+      "layer": "back",
+      "grid": true
+    }
+  ],
+  "padding": null,
+  "ggvis_opts": {
+    "keep_aspect": false,
+    "resizable": true,
+    "padding": {},
+    "duration": 250,
+    "renderer": "svg",
+    "hover_duration": 0,
+    "width": 672,
+    "height": 480
+  },
+  "handlers": null
+};
+ggvis.getPlot("plot_id719784954").parseSpec(plot_id719784954_spec);
+</script></p>
+<p>This provides a worst case for the change in interest rates for 1-6 months into the future, but I wanted a little bit more information about the magnitudes of change. So <code>findMaxChange</code> was modified a little bit so that it returns the entire vector of results instead of the range.</p>
+<p>Now we can plot a distribution of change in interest rates for each number of months to find out a little bit more information about the magnitudes of change we may see in these next few months.</p>
+<pre class="r"><code>allChange &lt;- do.call(rbind,lapply(1:6, findChange, mtg$rate))
+allChange %&gt;% ggvis(~nMonths, ~value) %&gt;% 
+  layer_boxplots(width = .75) %&gt;% 
+  add_axis(&quot;x&quot;, values = 1:6, title = &quot;Number of Months&quot;, format = 'd') %&gt;%
+  add_axis('y',title = &quot;Change in Interest Rate [%]&quot;)</code></pre>
+<p><div id="plot_id757931688-container" class="ggvis-output-container">
+<div id="plot_id757931688" class="ggvis-output"></div>
+<div class="plot-gear-icon">
+<nav class="ggvis-control">
+<a class="ggvis-dropdown-toggle" title="Controls" onclick="return false;"></a>
+<ul class="ggvis-dropdown">
+<li>
+Renderer: 
+<a id="plot_id757931688_renderer_svg" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id757931688" data-renderer="svg">SVG</a>
+ | 
+<a id="plot_id757931688_renderer_canvas" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id757931688" data-renderer="canvas">Canvas</a>
+</li>
+<li>
+<a id="plot_id757931688_download" class="ggvis-download" data-plot-id="plot_id757931688">Download</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<script type="text/javascript">
+var plot_id757931688_spec = {
+  "data": [
+    {
+      "name": ".0/group_by1/boxplot2/align3_flat",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "nMonths": "number",
+          "min_": "number",
+          "max_": "number",
+          "xmin_": "number",
+          "xmax_": "number",
+          "lower_": "number",
+          "upper_": "number",
+          "median_": "number"
+        }
+      },
+      "values": "\"nMonths\",\"min_\",\"max_\",\"xmin_\",\"xmax_\",\"lower_\",\"upper_\",\"median_\"\n1,-0.460000000000001,0.44,0.625,1.375,-0.130000000000001,0.100000000000001,-0.0200000000000005\n2,-0.850000000000001,0.77,1.625,2.375,-0.24,0.17,-0.0300000000000011\n3,-1.15,1.11,2.625,3.375,-0.31,0.260000000000002,-0.0300000000000002\n4,-1.37,1.28,3.625,4.375,-0.392500000000001,0.2925,-0.0499999999999994\n5,-1.58,1.5,4.625,5.375,-0.445000000000001,0.335,-0.0600000000000005\n6,-1.73,1.55,5.625,6.375,-0.49,0.39,-0.0700000000000003"
+    },
+    {
+      "name": ".0/group_by1/boxplot2/align3",
+      "source": ".0/group_by1/boxplot2/align3_flat",
+      "transform": [
+        {
+          "type": "treefacet",
+          "keys": [
+            "data.nMonths"
+          ]
+        }
+      ]
+    },
+    {
+      "name": ".0/group_by1/boxplot2/align3/boxplot_outliers4_flat",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "nMonths": "number",
+          "value_": "number"
+        }
+      },
+      "values": "\"nMonths\",\"value_\"\n1,0.449999999999999\n1,1.19\n1,2.24\n1,1.04\n1,-2.06\n1,-1.55\n1,-0.520000000000001\n1,0.639999999999999\n1,0.59\n1,0.579999999999998\n1,0.819999999999999\n1,0.450000000000003\n1,0.879999999999999\n1,-0.629999999999999\n1,-0.870000000000001\n1,0.530000000000001\n1,-0.550000000000001\n1,-0.84\n1,-0.82\n1,-0.789999999999999\n1,0.56\n1,0.48\n1,-0.49\n1,-0.69\n1,-0.52\n1,-0.630000000000001\n1,0.539999999999999\n1,0.790000000000001\n1,0.77\n1,0.56\n1,-0.609999999999999\n1,-0.49\n1,-0.57\n1,0.529999999999999\n1,0.640000000000001\n1,0.54\n1,0.63\n1,-0.8\n1,0.56\n1,0.53\n2,1.53\n2,1.26\n2,2.4\n2,3.28\n2,-1.02\n2,-3.61\n2,-2.07\n2,1.01\n2,1.23\n2,1.01\n2,1\n2,0.999999999999998\n2,1.12\n2,1.33\n2,1.17\n2,-1.5\n2,-1.39\n2,-1.66\n2,-1.61\n2,-0.99\n2,0.799999999999999\n2,0.940000000000001\n2,-0.950000000000001\n2,-0.979999999999999\n2,-0.880000000000001\n2,-0.880000000000001\n2,-0.889999999999999\n2,1.56\n2,0.93\n2,-0.889999999999999\n2,1.17\n2,0.92\n2,0.85\n2,1.03\n2,0.819999999999999\n2,-0.91\n2,-1.04\n2,0.83\n3,1.74\n3,1.6\n3,1.24\n3,2.38\n3,3.44\n3,1.22\n3,-2.57\n3,-4.13\n3,-1.7\n3,1.6\n3,1.65\n3,1.59\n3,1.27\n3,1.3\n3,1.25\n3,1.46\n3,1.62\n3,-1.21\n3,-1.27\n3,-2.21\n3,-2.45\n3,-1.81\n3,-1.36\n3,1.18\n3,-1.17\n3,-1.17\n3,-1.25\n3,-1.18\n3,1.52\n3,1.5\n3,-1.17\n3,1.25\n3,1.45\n4,1.74\n4,1.81\n4,1.58\n4,1.4\n4,2.45\n4,3.42\n4,1.38\n4,-3.09\n4,-3.76\n4,2.02\n4,2.23\n4,1.7\n4,1.34\n4,1.5\n4,1.57\n4,1.43\n4,1.7\n4,1.76\n4,1.75\n4,-2.09\n4,-3\n4,-2.65\n4,-2.18\n4,-1.57\n4,-1.43\n4,-1.7\n4,1.4\n4,1.46\n4,1.53\n5,1.79\n5,1.81\n5,1.79\n5,1.74\n5,3.64\n5,3.49\n5,-2.72\n5,-3.12\n5,2.6\n5,2.34\n5,1.93\n5,1.61\n5,1.61\n5,1.8\n5,1.7\n5,1.88\n5,2.58\n5,2.05\n5,-2.07\n5,-2.88\n5,-3.2\n5,-3.02\n5,-2.39\n5,-1.81\n5,-2.06\n5,-1.84\n6,2.14\n6,1.86\n6,1.79\n6,1.95\n6,3.98\n6,4.68\n6,-2.08\n6,-2.53\n6,2.08\n6,2.71\n6,2.57\n6,2.2\n6,1.79\n6,2.19\n6,1.91\n6,1.93\n6,2.15\n6,2.76\n6,2.87\n6,-2.28\n6,-2.86\n6,-3.08\n6,-3.57\n6,-3.23\n6,-2.63\n6,-1.83\n6,-2.11\n6,-2.2\n6,1.85"
+    },
+    {
+      "name": ".0/group_by1/boxplot2/align3/boxplot_outliers4",
+      "source": ".0/group_by1/boxplot2/align3/boxplot_outliers4_flat",
+      "transform": [
+        {
+          "type": "treefacet",
+          "keys": [
+            "data.nMonths"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scale/x",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "domain": "number"
+        }
+      },
+      "values": "\"domain\"\n0.3375\n6.6625"
+    },
+    {
+      "name": "scale/y",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "domain": "number"
+        }
+      },
+      "values": "\"domain\"\n-4.5705\n5.1205"
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "domain": {
+        "data": "scale/x",
+        "field": "data.domain"
+      },
+      "zero": false,
+      "nice": false,
+      "clamp": false,
+      "range": "width"
+    },
+    {
+      "name": "y",
+      "domain": {
+        "data": "scale/y",
+        "field": "data.domain"
+      },
+      "zero": false,
+      "nice": false,
+      "clamp": false,
+      "range": "height"
+    }
+  ],
+  "marks": [
+    {
+      "type": "group",
+      "from": {
+        "data": ".0/group_by1/boxplot2/align3"
+      },
+      "marks": [
+        {
+          "type": "rect",
+          "properties": {
+            "update": {
+              "stroke": {
+                "value": "#000000"
+              },
+              "fill": {
+                "value": "white"
+              },
+              "x": {
+                "scale": "x",
+                "field": "data.nMonths"
+              },
+              "y": {
+                "scale": "y",
+                "field": "data.min_"
+              },
+              "y2": {
+                "scale": "y",
+                "field": "data.max_"
+              },
+              "width": {
+                "value": 0.5
+              }
+            },
+            "ggvis": {
+              "data": {
+                "value": ".0/group_by1/boxplot2/align3"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "from": {
+        "data": ".0/group_by1/boxplot2/align3"
+      },
+      "marks": [
+        {
+          "type": "rect",
+          "properties": {
+            "update": {
+              "stroke": {
+                "value": "#000000"
+              },
+              "fill": {
+                "value": "white"
+              },
+              "x": {
+                "scale": "x",
+                "field": "data.xmin_"
+              },
+              "x2": {
+                "scale": "x",
+                "field": "data.xmax_"
+              },
+              "y": {
+                "scale": "y",
+                "field": "data.lower_"
+              },
+              "y2": {
+                "scale": "y",
+                "field": "data.upper_"
+              }
+            },
+            "ggvis": {
+              "data": {
+                "value": ".0/group_by1/boxplot2/align3"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "from": {
+        "data": ".0/group_by1/boxplot2/align3"
+      },
+      "marks": [
+        {
+          "type": "rect",
+          "properties": {
+            "update": {
+              "stroke": {
+                "value": "#000000"
+              },
+              "fill": {
+                "value": "white"
+              },
+              "x": {
+                "scale": "x",
+                "field": "data.xmin_"
+              },
+              "x2": {
+                "scale": "x",
+                "field": "data.xmax_"
+              },
+              "y": {
+                "scale": "y",
+                "field": "data.median_"
+              },
+              "height": {
+                "value": 1
+              }
+            },
+            "ggvis": {
+              "data": {
+                "value": ".0/group_by1/boxplot2/align3"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "from": {
+        "data": ".0/group_by1/boxplot2/align3/boxplot_outliers4"
+      },
+      "marks": [
+        {
+          "type": "symbol",
+          "properties": {
+            "update": {
+              "size": {
+                "value": 50
+              },
+              "fill": {
+                "value": "black"
+              },
+              "x": {
+                "scale": "x",
+                "field": "data.nMonths"
+              },
+              "y": {
+                "scale": "y",
+                "field": "data.value_"
+              }
+            },
+            "ggvis": {
+              "data": {
+                "value": ".0/group_by1/boxplot2/align3/boxplot_outliers4"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "legends": [],
+  "axes": [
+    {
+      "type": "x",
+      "scale": "x",
+      "orient": "bottom",
+      "title": "Number of Months",
+      "format": "d",
+      "values": [1, 2, 3, 4, 5, 6],
+      "layer": "back",
+      "grid": true
+    },
+    {
+      "type": "y",
+      "scale": "y",
+      "orient": "left",
+      "title": "Change in Interest Rate [%]",
+      "layer": "back",
+      "grid": true
+    }
+  ],
+  "padding": null,
+  "ggvis_opts": {
+    "keep_aspect": false,
+    "resizable": true,
+    "padding": {},
+    "duration": 250,
+    "renderer": "svg",
+    "hover_duration": 0,
+    "width": 672,
+    "height": 480
+  },
+  "handlers": null
+};
+ggvis.getPlot("plot_id757931688").parseSpec(plot_id757931688_spec);
+</script></p>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>For 2-5 months out, the biggest increases (and decreases) in mortage rates have been between 3.25 and 4.25%. Going out to 6 months, the biggest increase was over 4.5%. When looking at the range, for all months, the IQR is within +/- 0.5%. So, given my mom’s ideal purchase date is the end-of-March, we need interest rates to hold steady for 3 months (the data start with end-of-November, and you would lock your rate in by the end-of-February). Based on the historical data, I think we have a fairly good chance of that happening, but the worst case is that we’d see mortgage rates go up to 7.5-8.0%. Hopefully the worst case does not play out, though the Feds raised interest rates yesterday…</p>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
