@@ -2,8 +2,6 @@
 layout: page
 subheadline: "A place to showcase my small projects"
 title: "Projects"
-header:
-   image_fullwidth: "header_unsplash_5.jpg"
 permalink: "/projects/"
 ---
 This is a list of all my small projects:
