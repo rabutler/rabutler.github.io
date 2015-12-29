@@ -8,7 +8,7 @@
 abutler: # replace this with your info
   name: "Alan Butler"
   siterole: "webmaster, developer"
-  uri: http://rabutler.githubs.io
+  uri: /about-me/
   email:
   twitter: "@r_alanb"
 # you can add more authors here
