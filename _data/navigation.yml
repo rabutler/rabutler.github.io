@@ -9,11 +9,11 @@
 - title: "Projects"
   url: "/projects/"
   side: left
-  dropdown:
-  - title: "Ultimate Tic-Tac-Toe"
-    url: "/projects/ultimate-tic-tac-toe/"
-  - title: "Historical Mortgage Rates"
-    url: "/projects/historical-mortgage-interest/"
+  #dropdown:
+  #- title: "Ultimate Tic-Tac-Toe"
+  #  url: "/projects/ultimate-tic-tac-toe/"
+  #- title: "Historical Mortgage Rates"
+  #  url: "/projects/historical-mortgage-interest/"
 
 - title: "About Me"
   url: "/about-me/"
@@ -22,12 +22,12 @@
   - title: "CV"
     url: "/about-me/CV"
 
-#- title: Blog
-#  url: "/blog/"
-#  side: left
-#  dropdown:
-#  - title: "Blog Archive"
-#    url: "/blog/archive/"
+- title: Blog
+  url: "/blog/"
+  side: left
+  dropdown:
+  - title: "Blog Archive"
+    url: "/blog/archive/"
 
 - title: "Contact"
   url: "/contact/"
