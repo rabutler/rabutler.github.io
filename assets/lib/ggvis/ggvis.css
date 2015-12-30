@@ -91,7 +91,8 @@ nav.ggvis-control {
   float: right;
 }
 a.ggvis-dropdown-toggle {
-  background: url(gear.png) no-repeat;
+  /*background: url(gear.png) no-repeat;*/
+  background: url(/assets/img/download_arrow.png) no-repeat;
   background-size: 14px;
   width: 14px;
   height: 14px;
