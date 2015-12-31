@@ -27,6 +27,9 @@
 	{% include _favicon.html %}
 
 	{% if page.add_ggvis == true %} {% include _ggvis_scripts.html %} {% endif %}
+
+	<!-- js and css files for R syntax highlighting -->
+	{% if page.add_RHighlight == true %} {% include _RHighlight.html %} {% endif %}
 	
 	<!-- Facebook Optimization -->
 	<meta property="og:locale" content="{% if site.og_locale == nil %}en_EN{% else %}{{ site.og_locale }}{% endif %}" />
