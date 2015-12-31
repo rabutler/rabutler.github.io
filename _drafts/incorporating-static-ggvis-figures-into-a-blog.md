@@ -1,6 +1,7 @@
 ---
 layout: page
 title:  "Incorporating Static ggvis Figures Into Your Website"
+teaser: "I wanted to get some practice using ggvis, while also sharing my example work on this site. So, I started working on an example page that would incorporate ggvis figures in it."
 tags:
    - R
    - ggvis
@@ -10,9 +11,7 @@ comments: true
 ---
 
 ## Why?
-I wanted to get some practice using ggvis, while also sharing my example work. While it's easy enought to push a rmarkdown document to something like [RPubs][a], I also wanted to share it on this website. So alas, I started working on an example page that would hit on these goals. 
-
-I am now writing this post, as there are not a lot of details out there for how to incorporate static ggvis figures into your website/blog. 
+While it's easy enough to push a rmarkdown document to something like [RPubs][a], I wanted to make sure I could share it on this website. As I started working on the example page, I did not find a lot of details out there for how to incorporate static ggvis figures into your website/blog. So, I thought it would be a nice first post on the blog.  
 
 *Caveats:* I understand that ggvis is still in development mode and should "not be used in production environments". However, I anticipate using it more widely in the future, and so I'm gettting a jump start in using it. Also, while ggvis is "designed more for data exploration than data presentation", I think it would be nice to remove the interactive features of a plot and use it to display the final results on a website. 
 
@@ -26,14 +25,12 @@ The theme I use for this website also uses jQuery, and by default reference the 
 
 After all the librairies were split out, the ggvis figures would not load. It took a little bit of digging, but it seemed to be an issue with having jQuery in the footer. **Make sure jQuery is included in the header and not the footer.**
 
-### Jekyll Modifications (CHECK THIS)
-
 Then, all that is left is to make sure that all of the libraries are referenced in the header of the html document and the ggvis html can be inserted in the body of the document. For pages that use ggvis figures, my headers now looks as follows:
 
 ~~~ html
 <head>
 	<!-- other stuff -->
-	<script src="{{ site.baseurl }}/assets/lib/jquery/jquery-2.1.1.min.js"></script>
+	<script src="/assets/lib/jquery/jquery-2.1.1.min.js"></script>
 	<link href="/assets/lib/jquery-ui/jquery-ui.min.css" rel="stylesheet" />
 	<script src="/assets/lib/jquery-ui/jquery-ui.min.js"></script>
 	<script src="/assets/lib/d3/d3.min.js"></script>
@@ -48,6 +45,19 @@ Then, all that is left is to make sure that all of the libraries are referenced 
 ~~~
 
 Finally, my initial testing indicates that jQuery-ui.min.css and shiny-ggvis.js are not required to get the ggvis figures to show up. However, since I've only tested this on a few figures, I've left the references in for now.
+
+### Jekyll Template Modifications
+
+If you are using Jekyll, then you may be interested in the few modifications I made to the template files. While the file names are specific to the theme I use, the method will scale to other themes. 
+
+First, I only include the above links if the post will include ggvis figures; no use linking to unused libraries if they aren't necessary. To do this, in my front matter of my post (md or html) I add `add_ggvis: true` if the post will have a ggvis figure. Next, I created a new file in the \_include folder called \_ggvis\_scripts.html. This file includes all of the above links, except for the link to jQuery. Because I need jQuery in every page, it is included in \_head.html. Finally, in \_head.html, I added the following:
+
+{% highlight liquid %}
+{% raw %}
+{% if page.add_ggvis == true %} 
+{% include _ggvis_scripts.html %} 
+{% endif %} {% endraw %}
+{% endhighlight %}
 
 ## Examples
 
@@ -65,10 +75,10 @@ writeLines(as.character(ggvis::knit_print.ggvis(ggvFig)),
 
 If the code in "sample-ggvis-figure.html" is pasted into the website, it will display this figure:
 
-{% include samples/sample-ggvis-figure.html %}
+{% include_relative figs/sample-ggvis-figure.html %}
 
 ### Longer Example
-I also tested out the approach to see if it would work if I was writing the entire blog post from RStudio using rmarkdown. The example post is available [here][7], and the process seems to work. To create that page, I:
+I also tested out the approach to see if it would work if I was writing the entire blog post from RStudio using rmarkdown. The example post is available [here][7]. To create that page, I:
 
 1. Wrote the entire post in RStudio.
 2. Knit an html document in RStudio.
