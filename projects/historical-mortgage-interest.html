@@ -5,6 +5,7 @@ title:  "Historical Changes in Mortgage Rates"
 teaser: ""
 header: no
 add_ggvis: true
+add_RHighlight: true
 permalink: "/projects/historical-mortgage-interest/"
 ---
 
@@ -17,10 +18,10 @@ permalink: "/projects/historical-mortgage-interest/"
 </div>
 <div id="data" class="section level2">
 <h2>Data</h2>
-<p><a href="'http://www.freddiemac.com/pmms/pmms30.htm'">Freddie Mac</a> provides historical data on their website and in Excel format. Both the website and excel file are in formats that are not conducive to analysis. So, I decided to get some practice with the <code>rvest</code> package and grab the data straight from the table on the website since it was going to take the same amount of reformating as using the Excel files.</p>
-<p>I chose to use only the 30-year fixed rate data, as that is the type of mortage she will use.</p>
+<p><a href="'http://www.freddiemac.com/pmms/pmms30.htm'">Freddie Mac</a> provides historical data on their website and in Excel format. Both the website and excel file are in formats that are not conducive to analysis. So, I decided to get some practice with the <code>rvest</code> package and grab the data straight from the table on the website since it was going to take the same amount of reformatting as using the Excel files.</p>
+<p>I chose to use only the 30-year fixed rate data, as that is the type of mortgage she will use.</p>
 <p>It is super easy to read in the data from the table once you figure out the correct css selector (see the <code>rvest</code> selector gadget vignette).</p>
-<p><em>Note that these next two code chucks are not evaluated everytime, since at the end, I save the data. No use reading the html everytime.</em></p>
+<p><em>Note that these next two code chucks are not evaluated every time, since at the end, I save the data. No use reading the html every time.</em></p>
 <pre class="r"><code>library(lubridate) 
 library(rvest) 
 library(reshape2)
@@ -61,7 +62,7 @@ mtg &lt;- mtg %&gt;% reshape2::melt(varnames = c('month','year'), value.name = '
   dplyr::mutate(yearMon = paste(year,month,'01',sep = '-')) %&gt;% 
   dplyr::select(one_of('yearMon','rate'))
 
-# a quick funtion to convert from beginning-of-month dates to end-of-months dates
+# a quick function to convert from beginning-of-month dates to end-of-months dates
 last_day &lt;- function(date) {
   ceiling_date(date, &quot;month&quot;) + months(1) - days(1)
 }
