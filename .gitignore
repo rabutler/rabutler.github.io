@@ -1,6 +1,7 @@
 _site/
 .sass-cache/
 images/originals/
+images/test/
 helpfulInfo.txt
 test/
 backup/
