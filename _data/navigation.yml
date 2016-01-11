@@ -9,11 +9,11 @@
 - title: "Projects"
   url: "/projects/"
   side: left
-  #dropdown:
+  dropdown:
   #- title: "Ultimate Tic-Tac-Toe"
   #  url: "/projects/ultimate-tic-tac-toe/"
-  #- title: "Historical Mortgage Rates"
-  #  url: "/projects/historical-mortgage-interest/"
+  - title: "Historical Mortgage Rates"
+    url: "/projects/historical-mortgage-interest/"
 
 - title: "About Me"
   url: "/about-me/"
