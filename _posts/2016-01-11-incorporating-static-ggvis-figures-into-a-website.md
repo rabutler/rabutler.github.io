@@ -24,14 +24,14 @@ This site uses GitHub pages and Jekyll. There are several sources on using GitHu
 Thanks to [this question on Stack Exchange][1], I knew all I needed to do was add the necessary JavaScript libraries and a few css files to my site. The necessary libraries are: jQuery, jQuery-ui, D3, Vega, lodash, ggvis, and ggvis-shiny. I chose to download all of the libraries and css files, except for jQuery, from the [ggvis][5] repository so that I know I'm using the same version that ggvis is tested with. You also need the "gear.png" file that is in the same directory as the ggvis.css file, and it needs to remain in the same directory as ggvis.css. For jQuery, I downloaded version 2.1.1 from their [website][6]; more explanation of this below.
 
 ### Incorporating the jQuery Library
-The theme I use for this website also uses jQuery, and by default reference the JavaScript libraries in the footer rather than the header. It also has jQuery and several other libraries all combined into one JavaScript file. So after adding in references to the additional JavaScript libraries, the static ggvis figures would not load, even though the site already references jQuery. 
+The theme I use for this website also uses jQuery, and by default reference the JavaScript libraries in the footer rather than the header. It also has jQuery and several other libraries all combined into one JavaScript file. Even after adding in references to the additional JavaScript libraries, the static ggvis figures would not load.
 
-I started by splitting jQuery out from the other libraries this site uses. The theme uses version 2.1.1, whereas ggvis is using 1.11.0. In the end, I opted to go with version 2.1.1, since the entire site theme was designed using it. So far, it seems version 2.1.1 is working with the ggvis figures. The downside here is that my site won't work for some older versions of Internet Explorer; oh well.
+To determine why the figures would not load, I started by splitting jQuery out from the other libraries this site uses. The theme uses version 2.1.1, whereas ggvis is using 1.11.0. In the end, I opted to go with version 2.1.1, since the entire site theme was designed using it. So far, it seems version 2.1.1 is working with the ggvis figures. The downside here is that my site won't work for some older versions of Internet Explorer; oh well.
 
-After all the libraries were split out, the ggvis figures would not load, regardless of which version of jQuery I tried. It took a little bit of digging, but it seemed to be an issue with having jQuery in the footer. **Make sure jQuery is included in the header.** Once jQuery was referenced in the header, with all of the other necessary JavaScript libraries, the static ggvis figures loaded. 
+After all the libraries were split out, the ggvis figures still would not load, regardless of which version of jQuery I tried. It took a little bit of digging, but it seemed to be an issue with having jQuery in the footer. **Make sure jQuery is included in the header.** Once jQuery was referenced in the header, with all of the other necessary JavaScript libraries, the static ggvis figures loaded. 
 
 ### New Header References
-Then, all that is left is to make sure that all of the libraries are referenced in the header of the html document and the ggvis html can be inserted in the body of the document. For pages that use ggvis figures, my headers now include the following references:
+Once all of the libraries are referenced in the header of the html document the ggvis html can be inserted in the body of the document. For pages that use ggvis figures, my headers now include the following references:
 
 {% highlight html %}
 <head>
@@ -50,13 +50,13 @@ Then, all that is left is to make sure that all of the libraries are referenced 
 </head>
 {% endhighlight %}
 
-Finally, my initial testing indicates that jQuery-ui.min.css and shiny-ggvis.js are not required to get the ggvis figures to show up. However, since I've only tested this on a few figures, I've left the references in, for now.
+My initial testing indicates that jQuery-ui.min.css and shiny-ggvis.js are not required for the ggvis figures to load. However, since I've only tested this on a few figures, I've left the references in, for now.
 
 ### Jekyll Template Modifications
 
-If you are using Jekyll, then you may be interested in the few modifications I made to the template files. While the file names are specific to the theme I use, the method will scale to other themes. 
+If you are using Jekyll, then you may be interested in the few modifications I made to the template files. While the file names might be specific to the theme I use, the method should apply to other themes. 
 
-First, I only include the above references if the post will include ggvis figures. To do this, in my yaml front matter I add `add_ggvis: true` if the post will have a ggvis figure. Next, I created a new file in the \_include folder called \_ggvis\_scripts.html. This file includes all of the above links, except for the link to jQuery. By default, all of my pages include a reference to include "\_head.html" in the header. \_head.html includes the reference to jQuery among other information. To conditionally include the references to the other JavaScript libraries I then added the following to \_head.html:
+First, I only include the above references if the post will include ggvis figures. To do this, in my yaml front matter I add `add_ggvis: true` if the post will have a ggvis figure. Next, I created a new file in the \_include folder called \_ggvis\_scripts.html. This file includes all of the above references, except for the reference to jQuery. By default, all of my pages include "\_head.html" in the header. \_head.html includes the reference to jQuery among other information. To conditionally include the references to the other JavaScript libraries I then added the following to \_head.html:
 
 {% highlight liquid %}
 {% raw %}
@@ -94,7 +94,7 @@ I'm looking into ways to automate step 3.  For now, [see this description][3] fo
 
 ## Final Thoughts
 
-If you want to included static ggvis figures into your website or blog, it really only takes adding a few links to the appropriate JavaScript libraries. After that, it is a matter of choice for how to simplify the process for your individual site setup.
+If you want to included static ggvis figures into your website or blog, it really only takes adding a few references to the appropriate JavaScript libraries. After that, it is a matter of choice for how to simplify the process for your individual site setup.
 
 [a]: http://rpubs.com
 [b]: https://cran.r-project.org/web/packages/ggvis/vignettes/vega.html
