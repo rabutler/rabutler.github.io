@@ -1,7 +1,6 @@
 ---
 layout: page
 title: "About Me"
-subheadline: "Fun things about me."
 permalink: "/about-me/"
 ---
 
