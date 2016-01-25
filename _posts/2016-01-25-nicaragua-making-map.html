@@ -1,0 +1,124 @@
+---
+layout: page
+title:  "Constructing a Simple Map in R with KML Data and the maps Package"
+subheadline: "A Map of our Drive to Nicaragua - Part 1: Making the Map"
+tags:
+   - R
+   - KML
+   - maps
+   - R-sp
+   - R-maps
+   - R-rgeos
+   - R-maptools
+category: projects
+add_RHighlight: true
+comments: true
+---
+
+<!-- post written in RStudio, Rmarkdown; copy over knitted html -->
+
+<div class="container-fluid main-container">
+
+<p>For some time, I wanted to take the route we drove from Colorado to Nicaragua, and animate it. I was inspired to do so from the animation of the Colorado River in the recent <a href="https://www.doi.gov/water/owdi.cr.drought/en/#Shortage">Colorado River drought visualization project</a>. Since this project provided the inspiration, I mirrored their approach and created an animated an SVG. As I completed the animation, it seemed as though there are two, somewhat separate, parts to the project: (1) creating an SVG of the map in R and (2) using R, and JavaScript, to animate the driving route. As such, I have split the posts into two parts. Part 1 focuses on making the map, while Part 2 focuses on how to animate the SVG.</p>
+<p>In Part 1, we combine KML data from Google Maps with the maps package to create an SVG that we can later animate.</p>
+<div id="why" class="section level2">
+<h2>Why?</h2>
+<p>As stated above, the overall goal is to animate the route we took while driving from Colorado to Nicaragua. Though, as Part 1 focuses on making the map, there are a myriad of reasons one might need to combine KML data with existing base maps in R.</p>
+</div>
+<div id="how" class="section level2">
+<h2>How?</h2>
+<p>In a nutshell, we:</p>
+<ol style="list-style-type: decimal">
+<li>Export the route we took from an existing Google Map to KML files.</li>
+<li>Read the KML files into R, and convert them to <code>SpatialLines</code>.</li>
+<li>Create the background map.</li>
+<li>Transform the map and route to an appropriate projection.</li>
+<li>Style the map.</li>
+<li>Save as an SVG.</li>
+</ol>
+<p>For this process, we need the following packages:</p>
+<pre class="r"><code>library(sp)
+library(maptools)
+library(magrittr) # for pipe function
+library(maps)
+library(rgeos) # for gSimplify</code></pre>
+<div id="creating-spatiallines-from-kml-files" class="section level3">
+<h3>Creating SpatialLines from KML Files</h3>
+<p>After exporting the <a href="https://www.google.com/maps/d/u/0/edit?mid=z30tQQUUfs-4.kcLP735LT47Q">route we took from our existing Google Map</a>, we read the KML data into R. The maptools package provides a nice way to read in the coordinates from the KML file, which is all we need for this project. In Google Maps, multiple layers are necessary to create the entire route because there is a limitation that only allows 11 way points in each layer. To export the layers, you can create one big KML file or one file for each layer. There were a few layers from Google Maps we did not need and we needed to make sure the coordinates were appended in the correct order. As such, I thought it was simpler to read in multiple KML files rather than trim one giant KML file.</p>
+<p>The warning messages of the following code have been suppressed, but it does results in a warning that there is an “incomplete final line” in each KML file.</p>
+<pre class="r"><code>  # kml files to read in, in the order they should be read in
+  kmlFiles &lt;- paste0(c('DrivingRoute1','DrivingRoute2', 'Ferry', 
+                       paste0('DrivingRoute',3:6)),'.kml')
+  
+  r1 &lt;- do.call(rbind, lapply(kmlFiles, function(x) 
+    as.data.frame(maptools::getKMLcoordinates(paste0('data/',x),TRUE)[[1]])))
+  
+  names(r1) &lt;- c('long','lat')</code></pre>
+<p>The <a href="http://gis.stackexchange.com/questions/48949/epsg-3857-or-4326-for-googlemaps-openstreetmap-and-leaflet">coordinates in the KML files from Google Maps</a> and the maps package use longitude and latitude with the WGS84 datum; this corresponds to EPSG code 4326. It took a little <a href="https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/OverviewCoordinateReferenceSystems.pdf">reading</a> and more guess and test work to find a projection that looked decent for the U.S., Mexico, and Central America. Eventually, I selected the Lambert Conformal Conic (LCC) projection for this map. The <a href="http://www.remotesensing.org/geotiff/proj_list/lambert_conic_conformal_2sp.html">documentation for the EPSG code</a> lists the parameters that must be set for this projection, and I deferred to <a href="http://www.georeference.org/doc/lambert_conformal_conic.htm">other guidance</a> to determine these parameter values.</p>
+<p>Both the WGS84 datum and the LCC parameter values are passed to the Coordinate Reference System (<code>CRS</code>) function and assigned to <code>defProj</code> and <code>myProj</code>, respectively, for later use in transforming both the route and the background map to the LCC projection.</p>
+<pre class="r"><code>  defProj &lt;- sp::CRS('+init=epsg:4326') # default datum
+  
+  # the lambert conformal conic, set based on sites recomendations
+  myProj &lt;- sp::CRS('+proj=lcc +lat_1=32 +lat_2=44 +lat_0=38 +lon_0=-100 +x_0=False +y_0=False')</code></pre>
+<p>The Lambert Azimuth Equal Area projection centered on Mexico City, also looked nice. The code for using this projection is: <code>sp::CRS('+proj=laea +lat_0=19 +lon_0=-99 +x_0=False +y_0=False')</code></p>
+<p>Now that we know what projection system we are starting from, and going to, we convert the KML data into a <code>SpatialLines</code> object, and transform it to the LCC projection.</p>
+<pre class="r"><code>  # create spatial lines from the kml data
+  driveLine &lt;- sp::Line(r1) %&gt;% list() %&gt;% sp::Lines(ID='drive-line') %&gt;%
+    list() %&gt;% sp::SpatialLines(proj4string = defProj) %&gt;% 
+    sp::spTransform(myProj) %&gt;%
+    rgeos::gSimplify(tol = 500) # arbitrarily chosen tolerance</code></pre>
+<p>It is important to simplify the line using <code>rgeos::gSimplify</code>. I think this is because the data may exist at a different precision in the different KML files. Before I added this in, the animation appeared jerky and slow in different areas.</p>
+</div>
+<div id="creating-the-background-map" class="section level3">
+<h3>Creating the Background Map</h3>
+<p>Now, we create the background map, using the maps package. It is not clear from the help file, but the <code>fill = TRUE</code> parameter is necessary so that each of the states/countries is created as its own polygon. Without this, <code>maptools::map2SpatialPolygons</code> will return an error.</p>
+<p>After some playing around with the map, it seemed like including the entire U.S. provides the most visually appealing map, so that is what is done here. We create a map of all the states, convert them to <code>SpatialPolygons</code>, and transform it to the LCC projection. Then, we follow the same steps for Mexico, and all of the countries in Central America. Finally, the two sets of polygons are combined.</p>
+<pre class="r"><code>  # now add background map of states and countries we drove through
+  ss &lt;- maps::map('state', plot = F, fill = T)
+  idS &lt;- sapply(strsplit(ss$names, ':'), function(x) x[1])
+  ssSt &lt;- maptools::map2SpatialPolygons(ss, IDs=idS, proj4string=defProj) %&gt;%
+    sp::spTransform(myProj)
+  
+  mx &lt;- maps::map('world',c('mexico','guatemala','nicaragua','el salvador', 'honduras', 'belize',
+                      'costa rica','panama'),plot = F, fill = T, col = 'black')
+  idMx &lt;- sapply(strsplit(mx$names, &quot;:&quot;), function(x) x[1])
+  ssMx &lt;- maptools::map2SpatialPolygons(mx, IDs=idMx, proj4string=defProj) %&gt;%
+    sp::spTransform(myProj)
+  
+  bgMap &lt;- rbind(ssSt, ssMx) # rbind combines polygons for spatialPolygons</code></pre>
+</div>
+<div id="formatting-and-saving-the-map" class="section level3">
+<h3>Formatting and Saving the Map</h3>
+<p>The last steps are to format the map and save as a SVG. The simple formatting is taken care of in the <code>plot</code> commands. I played around with using the new <a href="http://blog.rstudio.org/2015/12/10/svglite-1-0-0/">svglite package</a>, but it saves the polygons as polylines, instead of paths. They need to be paths for the animation to work, so we use the default <code>svg</code> graphics device. With this setup, a separate <code>&lt;path&gt;</code> element in the SVG is created for each state and country. The driving route is the last <code>&lt;path&gt;</code> element in the SVG because it is the last object we plot to the SVG device. This is important to know when it comes time to annimate the SVG in Part 2.</p>
+<pre class="r"><code>  # add the map and route to the svg
+  svg(filename = 'driveRoute.svg',width=8, height=8)
+  par(mar = rep(0,4)) # remove margins
+  plot(bgMap, col = 'grey15', border = 'grey50')
+  plot(driveLine, col = 'steelblue3', add = T, lwd = 2.75) 
+  dev.off()</code></pre>
+<p>Which creates the following map:</p>
+<!-- html to import the svg from the site directory
+ *** add it here -->
+	<div id="driveRouteContainer">
+		<object id="driveRouteObj" data="{{ site.baseurl }}/images/driveRoute.svg" type="image/svg+xml" width="70%" height="70%"></object>	
+	</div>
+ 
+<p>Part 2 will describe how to animate the path from Colorado to Nicaragua, i.e., the blue line.</p>
+</div>
+</div>
+<div id="final-thoughts" class="section level2">
+<h2>Final Thoughts</h2>
+<p>Nothing new here, but a couple of key points:</p>
+<ul>
+<li>The maptools package offers a convenient way to read in KML data.</li>
+<li>It is necessary to uniformly simplify the KML data (<code>rgeos::gSimplify</code>) so that the animation will look smooth.</li>
+<li>The coordinates exported from Google Maps and the maps package use the WGS84 datum. This information can be conveyed to the sp package, for creating spatial objects, using <code>sp::CRS('+init=epsg:4326')</code></li>
+</ul>
+<div id="find-the-code" class="section level3">
+<h3>Find the Code</h3>
+<p>The code, data, and this write up, are available on <a href="https://www.github.com/rabutler/animateNicaDrive">GitHub</a>. The steps described here are isolated in <a href="https://github.com/rabutler/animateNicaDrive/blob/master/createInitialSVG.R"><code>createInitialSVG.R</code></a>.</p>
+</div>
+</div>
+
+
+</div>
