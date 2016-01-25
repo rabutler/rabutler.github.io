@@ -20,10 +20,8 @@ var draw = function(mySvgObj, myPath){
 	// Define our transition
 	path.style.transition = path.style.WebkitTransition =
 	  'stroke-dashoffset 10s linear';
+	path.style.strokeOpacity = '1';
 	// Go!
 	path.style.strokeDashoffset = '0';
 }
 	
-window.onload = function(){	
-	draw('driveRouteObj', 'drivePath');
-}
