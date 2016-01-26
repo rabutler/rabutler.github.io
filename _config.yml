@@ -24,8 +24,8 @@ author: abutler
 
 # This URL is the main address for absolute links. Don't include a slash at the end.
 #
-url: 'https://rabutler.github.io'
-baseurl: 'https://rabutler.github.io'
+url: 'https://ralanbutler.com'
+baseurl: 'https://ralanbutler.com'
 
 # This is for the editing function in _/includes/improve_content
 # Leave it empty if your site is not on GitHub/GitHub Pages
@@ -224,7 +224,7 @@ sass:
 #
 # used in _includes/footer_scripts
 
-google_analytics_tracking_id: UA-60112281-1
+google_analytics_tracking_id: UA-72893202-1
 
 
 
