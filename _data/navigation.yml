@@ -4,11 +4,11 @@
 
 - title: Trips
   url: "/trips/"
-  side: left
+  side: right
   
 - title: "Projects"
   url: "/projects/"
-  side: left
+  side: right
   dropdown:
   #- title: "Ultimate Tic-Tac-Toe"
   #  url: "/projects/ultimate-tic-tac-toe/"
@@ -17,14 +17,14 @@
 
 - title: "About Me"
   url: "/about-me/"
-  side: left
+  side: right
   dropdown:
   - title: "CV"
     url: "/about-me/CV"
 
 - title: Blog
   url: "/blog/"
-  side: left
+  side: right
   dropdown:
   - title: "Blog Archive"
     url: "/blog/archive/"
