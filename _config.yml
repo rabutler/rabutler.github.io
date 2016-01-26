@@ -24,8 +24,8 @@ author: abutler
 
 # This URL is the main address for absolute links. Don't include a slash at the end.
 #
-url: 'https://ralanbutler.com'
-baseurl: 'https://ralanbutler.com'
+url: 'http://ralanbutler.com'
+baseurl: 'http://ralanbutler.com'
 
 # This is for the editing function in _/includes/improve_content
 # Leave it empty if your site is not on GitHub/GitHub Pages
@@ -139,7 +139,7 @@ defaults:
 #  /____/_____/\____/    Verify Website to Webmaster Tools
 
 google_author:             "https://plus.google.com/u/0/117594388995404529112"
-google_site_verification:  "Vk0IOJ2jwG_qEoG7fuEXYqv0m2rLa8P778Fi_GrsgEQ"
+google_site_verification:  "v4_u116MsS4aoOdbEXrvgWc0AiTZKHE2REm3ybcLVGE"
 bing_webmastertools_id:    "0FB4C028ABCF07C908C54386ABD2D97F"
 # alexa_verify_id:         ""
 
