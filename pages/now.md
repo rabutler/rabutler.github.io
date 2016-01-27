@@ -10,20 +10,21 @@ Right now, I am:
 - Focused on:
   - Creating new good habits, losing some bad habits, and tracking my progress using [HabitBull][1].
   - Creating a healthy body and mind, through nutrition, working out, and meditation, so that I can [live to be 213 years old][2].
-  - Creating, not consuming.
+  - Creating, not consuming
 - Working on:
-  - Getting this website/blog up and running.
-  - Being ["so good they cannot ignore me"][3].
+  - Getting this website/blog up and running
+  - Being ["so good they cannot ignore me"][3]
+  - Learning JavaScript
 - Inspired by:
-  - Great surfers.
-  - Peter Diamandis.
+  - Great surfers
+  - Peter Diamandis
   - [Lazy: A Manifesto.][4]
 - Enjoying:
-  - Surfing.
+  - Surfing
   - Isaac Asimov's short stories. They seem relevant to some modern debates on artificial intelligence. 
-  - Not being "busy".
+  - Not being "busy"
 
-__Based on Derek Sivers' [NowNowNow][5]__  
+__Based on Derek Sivers' [NowNowNow][5] project.__  
   
 _Updated: 27-01-2016_
   
