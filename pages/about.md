@@ -10,7 +10,7 @@ I graduated from the University of Colorado-Boulder in 2011 with a BS and MS in 
 
 I enjoy traveling, skiing, rock climbing, and now, surfing. Most of my trips involve going somewhere to do one of those activities.
 
-I also enjoy programming. While I enjoy solving any problem I can with a computer's assistance, I focus on automating manual processes and creating compelling visualisations of (mostly water related) data. 
+I also enjoy programming. While I enjoy solving any problem I can with a computer's assistance, I focus on automating manual processes and creating compelling visualisations of (mostly water related) data. In most cases, I utilize R to solve the problems and create the visualisations, as I have been using it extensively for the previous six years.
 
 I often think, and dream, about future technologies that will make our lives easier. In particular, driverless cars have me extremely excited. The day when I can hop in a car after work and wake up in Jackson Hole, well rested, to 18" of snow, cannot come soon enough. And I'm meditating on what I can do to help that day arrive faster.
 
