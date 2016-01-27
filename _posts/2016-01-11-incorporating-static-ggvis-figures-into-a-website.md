@@ -8,7 +8,9 @@ tags:
    - html
    - JavaScript
    - Jekyll
-category: projects
+category: 
+   - projects
+   - R
 add_ggvis: true
 comments: true
 ---
