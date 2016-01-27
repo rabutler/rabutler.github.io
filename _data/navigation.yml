@@ -20,14 +20,18 @@
   side: right
   dropdown:
   - title: "Blog Archive"
-    url: "/blog/archive/"	
-	
+    url: "/blog/archive/"
+
 - title: "About Me"
   url: "/about-me/"
   side: right
   #dropdown:
   #- title: "CV"
   #  url: "/about-me/CV"
+
+- title: "Now"
+  url: "/now/"
+  side: right
 
 - title: "Contact"
   url: "/contact/"
