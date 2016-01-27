@@ -18,9 +18,9 @@
 - title: "About Me"
   url: "/about-me/"
   side: right
-  dropdown:
-  - title: "CV"
-    url: "/about-me/CV"
+  #dropdown:
+  #- title: "CV"
+  #  url: "/about-me/CV"
 
 - title: Blog
   url: "/blog/"
