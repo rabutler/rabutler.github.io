@@ -14,8 +14,9 @@ I also enjoy programming. While I enjoy solving any problem I can with a compute
 
 I often think, and dream, about future technologies that will make our lives easier. In particular, driverless cars have me extremely excited. The day when I can hop in a car after work and wake up in Jackson Hole, well rested, to 18" of snow, cannot come soon enough. And I'm meditating on what I can do to help that day arrive faster.
 
-For more about what I'm up to right now, check out the [Now][1] page. 
+For more about what I'm up to right now, check out the [Now][1] page. You can also find me on GitHub, Instagram, and LinkedIn below. Or, you can [contact me here][2].
 
 {% include alert info='You will be able to find a link to my CV here at some future date. Until then, find me on <a href = "https://www.linkedin.com/in/alan-butler-63b11a28">LinkedIn</a>.' %}
 
 [1]: /now/
+[2]: /contact/
