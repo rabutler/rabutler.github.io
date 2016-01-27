@@ -22,8 +22,8 @@
   - title: "Blog Archive"
     url: "/blog/archive/"
 
-- title: "About Me"
-  url: "/about-me/"
+- title: "About"
+  url: "/about/"
   side: right
   #dropdown:
   #- title: "CV"

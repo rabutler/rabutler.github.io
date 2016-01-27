@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "About"
-permalink: "/about-me/"
+permalink: "/about/"
 ---
 
 The site logo says it all. I am a Boulder, Colorado based skiing, traveler, who likes writing code, mostly in R, that works as an engineer. I anticipate that I'll use this website as a place to show off some of my rad R skills and brag about some of my awesome trips. 
