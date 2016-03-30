@@ -8,7 +8,9 @@ tags:
    - JavaScript
    - maps
    - R-XML
-category: projects
+category: 
+   - projects
+   - R
 add_RHighlight: true
 comments: true
 ---
@@ -33,7 +35,7 @@ In a nutshell, we:
 
 1. Create the initial SVG. There are many ways to do so; see [Part 1][1] for how we created the initial map.
 2. Add an ID attribute to the SVG `<path>` we want to animate.
-3. Adapt [existing JavaScript][5] to make the driving route appear progressively.
+3. Adapt [existing JavaScript][5] to make the driving route appear to draw itself.
 4. Combine the SVG and JavaScript.
 
 Regarding step 3, there are many guides for how to animate an SVG using JavaScript including [here][5] and [here][6]. We followed the approach of the former, as you specify the length of the animation in seconds rather than as a number of frames.
@@ -41,7 +43,7 @@ Regarding step 3, there are many guides for how to animate an SVG using JavaScri
 There are two questions to answer before completing these steps:
 
 * Will the SVG be included directly in the html or referenced as an `<object>` or `<iframe>`? The answer to this will affect step 3.
-* Will the JavaScript be included within the `<svg>` tags, or referenced as a seperate script? The answer to this affects step 3 and 4. 
+* Will the JavaScript be included within the `<svg>` tags, or referenced as a separate script? The answer to this affects steps 3 and 4. 
 
 The following sections detail these steps, and provide examples for all answers to these questions.
 
@@ -80,14 +82,14 @@ svg <- svg %>% name_svg_elements(ele_names = pathNames, keep.attrs = keepAtts) %
 cat(svg, file = paste0(svgOut), append = FALSE)
 {% endhighlight %}
 
-Now, the SVG has a `<path>` element with an ID set to "drivePath". We will use JavaScript to animate the drivePath.
+Now that the SVG has a `<path>` element with an ID set to "drivePath" we will use JavaScript to animate the drivePath.
 
 ### Animating the Path Using JavaScript
 
 At the beginning I noted there are two questions pertaining to how the SVG and JavaScript files will be structured. They are: 
 
 * Will the SVG be included directly in the html or referenced as an `<object>` or `<iframe>`?
-* Will the JavaScript be included within the `<svg>` tags, or referenced as a seperate script?
+* Will the JavaScript be included within the `<svg>` tags, or referenced as a separate script?
 
 We will setup both the SVG and the JavaScript file to be referenced via `<object>` and `<script>` tags in the html, but will note how to edit the setup if the SVG is included in the html or the JavaScript is included within the `<svg>` tags.  
 
@@ -104,9 +106,9 @@ The basic setup for referencing the SVG and JavaScript from an HTML document is:
 
 _Note that I use the `<object>` tag to reference the SVG, but the same JavaScript should work if it is referenced using `<iframe>`._
 
-We follow [Archibald's][5] approach, with the following modifications. We start by getting the containing document by its ID, and then get the contents of the document, We select the path based on path ID ("drivePath"), and perform some changes to the path's style attributes. We change the animation to be 10 seconds long and linear (`path.style.transition = path.style.WebkitTransition ="stroke-dashoffset 10s linear";`), and make the path show up (`path.style.strokeOpacity = "1";`) since it is initially hidden. Playing around with the `path.style.transition` will allow you to customize the look of the line drawing itself and how long it takes to complete.
+We follow [Archibald's][5] approach, with the following modifications. First, we get the containing document by its ID, and then get the contents of the document. Next, we select the path based on path ID ("drivePath"), and perform some changes to the path's style attributes. We change the animation to be 10 seconds long and linear (`path.style.transition = path.style.WebkitTransition ="stroke-dashoffset 10s linear";`), and make the path show up (`path.style.strokeOpacity = "1";`) since it is initially hidden. Playing around with the `path.style.transition` will allow you to customize the look of the line drawing itself and how long it takes to complete.
 
-Also, since the JavaScript file is referenced, it makes sense to make it more generic so that it can be reused. As shown below, it now accepts two arguements: `mySvgObj` which is the ID attribute of the containing `<object>` code, and `myPath`, which is the ID attribute of the `<path>` you wish to annimate. 
+Also, since the JavaScript file is referenced, it makes sense to make it generic so that it can be reused. As shown below, it accepts two arguments: `mySvgObj` which is the ID attribute of the containing `<object>` code, and `myPath`, which is the ID attribute of the `<path>` you wish to animate. 
 
 {% highlight javascript %}
 {% raw %}
@@ -137,7 +139,7 @@ var draw = function(mySvgObj, myPath){
 {% endraw %}
 {% endhighlight %}
 
-As shown in the next section, we will start the animation with a button click, however, adding `window.onload = function(){ draw(); }` to the end of the JavaScript file will have the animation start as soon as the page loads. portion.  
+As shown in the next section, we will start the animation with a button click that calls `draw('objID', 'drivePath')`. However, adding `window.onload = function(){ draw(); }` to the end of the JavaScript file will have the animation start as soon as the page loads.   
 
 #### Modifications for Embedded JavaScript
 
@@ -147,7 +149,7 @@ While the JavaScript code could be copied and pasted into the SVG, we used R to 
 
 {% highlight r %}
 
-# R variable containing the above JavaScript, seperated with returns
+# R variable containing the above JavaScript, separated with returns
 jsScript <- c('var draw = function(){
 var path = document.getElementById("drivePath");
 var length = path.getTotalLength();
@@ -184,11 +186,11 @@ After all this, we are left with the following map. Click the button to start th
 
 ## Final Thoughts
 
-The XML package can be leveraged to edit SVG files, including adding animations to the SVG. By identifying the `<path>` element you want to animate, naming it, and passing it to some JavaScript code, the path can be animated. While the demonstration here is a simplistic animation, the methodolgy will scale to more complex animations.
+The XML package can be leveraged to edit SVG files, including adding animations to the SVG. By identifying the `<path>` element you want to animate, naming it, and passing it to some JavaScript code, the path can be animated. While the demonstration here is a simplistic animation, the methodology will scale to more complex animations.
 
-Instead of having the final map start by a button click, or on the page loading, it is preferable to have it run once the user has scrolled to the figure location. One of the scrolling animation JavaScript libraries, e.g., [ScrollMagic][13], is likely required to do this, and will be completed in the future since I am unfamiliear with them at this point.
+Instead of having the final map start by a button click, or on the page loading, it is preferable to have it run once the user has scrolled to the figure location. One of the scrolling animation JavaScript libraries, e.g., [ScrollMagic][13], is likely required to do this, and will be completed in the future since I am unfamiliar with them at this point.
 
-Finally, there are two existing R packages that could likely handle this annimation. First, there is the [SVGAnnotation][18] R package, but it was last updated in 2012. Also, there is the [gridSVG][17] package that has an animate function, however, it uses SMIL animation on SVGs and according to [this post][16] SMIL is depreciated in Chrome. As such, we forged ahead using the XML package to handle the majority of the modifications to the SVG.
+Finally, there are two existing R packages that could likely handle this animation. First, there is the [SVGAnnotation][18] R package, but it was last updated in 2012. Also, there is the [gridSVG][17] package that has an animate function, however, it uses SMIL animation on SVGs and according to [this post][16] SMIL is depreciated in Chrome. As such, we forged ahead using the XML package to handle the modifications to the SVG.
 
 ### Find the Code
 
@@ -198,12 +200,12 @@ Both the code for [Part 1][1], and this part are available on [GitHub][14]. The 
 
 The [Colorado River Drought Visualisation project][2] inspired this animation, and provided much of the [code][7] we relied on, either directly or as an example. The folks at the United States Geological Survey Center for Integrated Data Analytics deserve all of the credit.
 
-__Full disclosure:__ _I was fortunate to be a part of the Colorado River Drought visualisation project during its beginning stages, and prior to my sabatical._
+__Full disclosure:__ _I was fortunate to be a part of the Colorado River Drought visualisation project during its beginning stages, and prior to my sabbatical._
 
 <!-- links: -->
 [1]: /blog/2016/01/25/nicaragua-making-map/
 [2]: https://www.doi.gov/water/owdi.cr.drought/en/#Shortage
-[3]: example from http://g.raphaeljs.com/ ??
+[3]: http://dmitrybaranovskiy.github.io/raphael/australia.html
 [4]: http://www.svgopen.org/2007/papers/SLOGO_Abstract/SLogo_Fig9_Goldberg_Machine.svg 
 [5]: https://jakearchibald.com/2013/animated-line-drawing-svg/
 [6]: https://24ways.org/2013/animating-vectors-with-svg/
