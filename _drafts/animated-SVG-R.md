@@ -186,7 +186,9 @@ After all this, we are left with the following map. Click the button to start th
 
 The XML package can be leveraged to edit SVG files, including adding animations to the SVG. By identifying the `<path>` element you want to animate, naming it, and passing it to some JavaScript code, the path can be animated. While the demonstration here is a simplistic animation, the methodolgy will scale to more complex animations.
 
-Instead of having the final map start by a button click, or on the page loading, it is preferable to have it run once the user has scrolled to the figure location. One of the scrolling animation JavaScript libraries, e.g., [ScrollMagic][13], is likely required to do this, and will be completed in the future.
+Instead of having the final map start by a button click, or on the page loading, it is preferable to have it run once the user has scrolled to the figure location. One of the scrolling animation JavaScript libraries, e.g., [ScrollMagic][13], is likely required to do this, and will be completed in the future since I am unfamiliear with them at this point.
+
+Finally, there are two existing R packages that could likely handle this annimation. First, there is the [SVGAnnotation][18] R package, but it was last updated in 2012. Also, there is the [gridSVG][17] package that has an animate function, however, it uses SMIL animation on SVGs and according to [this post][16] SMIL is depreciated in Chrome. As such, we forged ahead using the XML package to handle the majority of the modifications to the SVG.
 
 ### Find the Code
 
@@ -194,7 +196,7 @@ Both the code for [Part 1][1], and this part are available on [GitHub][14]. The 
 
 ## Acknowledgements
 
-The [Colorado River Drought Visualisation project][2] inspired this animation, and provided much of the [code][7] we relied on, either directly or as an example. The good folks at the United States Geological Survey Center for Integrated Data Analytics deserve heaps of credit. In particular, we would like to thank Jordan Read, who is working on a package to handle some of these animation tasks. We look forward to relying on that package when it is available.
+The [Colorado River Drought Visualisation project][2] inspired this animation, and provided much of the [code][7] we relied on, either directly or as an example. The folks at the United States Geological Survey Center for Integrated Data Analytics deserve all of the credit.
 
 __Full disclosure:__ _I was fortunate to be a part of the Colorado River Drought visualisation project during its beginning stages, and prior to my sabatical._
 
@@ -214,3 +216,6 @@ __Full disclosure:__ _I was fortunate to be a part of the Colorado River Drought
 [13]: http://scrollmagic.io/
 [14]: https://github.com/rabutler/animateNicaDrive/
 [15]: https://github.com/rabutler/animateNicaDrive/blob/master/modifySVGForAnimation.R
+[16]: https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/5o0yiO440LM%5B1-25%5D
+[17]: https://sjp.co.nz/projects/gridsvg/
+[18]: http://bioconductor.org/packages/devel/extra/html/SVGAnnotation.html
