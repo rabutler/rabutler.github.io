@@ -4,7 +4,7 @@ title: "About"
 permalink: "/about/"
 ---
 
-The site logo says it all. I am a Boulder, Colorado based skiing, traveler, who likes writing code, mostly in R, that works as an engineer. I anticipate that I'll use this website as a place to show off some of my rad R skills and brag about some of my awesome trips. 
+The site logo says it all. I ski, travel, and work as an engineer to pay for my skiing and traveling (and to positively contribute to society in some minor way). My favorite part of working as an engineer is writing code, mostly in R. I anticipate that I'll use this website as a place to show off some of my rad R skills and brag about some of my awesome trips. But, if no one ever reads it, I am happy with this acting as a repository for me to document some of my coding projects. 
 
 I graduated from the University of Colorado-Boulder in 2011 with a BS and MS in Civil Engineering with a concentration in water resources. Since then, I have worked for the Bureau of Reclamation, building, and running deterministic and statistical water resource management models. 
 
