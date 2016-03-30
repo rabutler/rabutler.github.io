@@ -23,7 +23,7 @@ The overall goal is to make our route in blue (shown below) appear to draw itsel
 
 ## Why?
 
-There are some interesting and compelling animated SVGs out there. For example: [this][2], [this][3], and [this][4]. If you are familiar with R, you can use R to create the initial image, whether it is from an analysis, map, or something else. Then, using the XML package, you can edit SVG files. Most importantly, I think, if all of these steps are completed using R, it __provides documentation for what data the image uses and how the image was created and/or edited.__
+There are some interesting and compelling animated SVGs out there. For example: [this][2], [this][3], and [this][4]. If you are familiar with R, you can use R to create the initial image, whether it is from an analysis, map, or something else. Then, using the XML package, you can edit SVG files. Most importantly, I think, if all of these steps are completed using R, it provides documentation for what data the image uses and how the image was created and/or edited.
 
 ## How?
 
@@ -89,45 +89,61 @@ At the beginning I noted there are two questions pertaining to how the SVG and J
 * Will the SVG be included directly in the html or referenced as an `<object>` or `<iframe>`?
 * Will the JavaScript be included within the `<svg>` tags, or referenced as a seperate script?
 
-We will walk through the setup for two versions that encompass several answers to these questions. The first version, we will refer to as the "Stand Alone SVG". For this version, it will be included directly in the html, and will include the JavaScript within the `<svg>` tags. The second version will be the "Referenced SVG and JavaScript" version, where we will setup both the SVG and the JavaScript file to be referenced via `<object>` and `<script>` tags in the html. 
+We will setup both the SVG and the JavaScript file to be referenced via `<object>` and `<script>` tags in the html, but will note how to edit the setup if the SVG is included in the html or the JavaScript is included within the `<svg>` tags.  
 
-As explained [here][11], the basis for creating the animation is that you are modifying the `stroke-dashoffset` and `stroke-dasharray` style settings, such that the line progressively appears, i.e., looks like it is drawing itself. For both approaches, we use a modified version of [Jake Archibald's][5] approach.
+As explained [here][11], the basis for creating the animation is that you are modifying the `stroke-dashoffset` and `stroke-dasharray` style settings, such that the line progressively appears, i.e., looks like it is drawing itself. To do this, we use a modified version of [Jake Archibald's][5] approach.
 
-#### Stand Alone SVG
+The basic setup for referencing the SVG and JavaScript from an HTML document is:
 
-For the stand alone versrion of the SVG, we will add the following JavaScript into the SVG, and trigger the animation to begin when the document loads:
+{% highlight html %}
+{% raw %}
+<object id="objID" data="/path/to/Animated.svg" type="image/svg+xml"></object>
+<script src="/path/to/AnimateCode.js"></script>
+{% endraw %}
+{% endhighlight %}
+
+_Note that I use the `<object>` tag to reference the SVG, but the same JavaScript should work if it is referenced using `<iframe>`._
+
+We follow [Archibald's][5] approach, with the following modifications. We start by getting the containing document by its ID, and then get the contents of the document, We select the path based on path ID ("drivePath"), and perform some changes to the path's style attributes. We change the animation to be 10 seconds long and linear (`path.style.transition = path.style.WebkitTransition ="stroke-dashoffset 10s linear";`), and make the path show up (`path.style.strokeOpacity = "1";`) since it is initially hidden. Playing around with the `path.style.transition` will allow you to customize the look of the line drawing itself and how long it takes to complete.
+
+Also, since the JavaScript file is referenced, it makes sense to make it more generic so that it can be reused. As shown below, it now accepts two arguements: `mySvgObj` which is the ID attribute of the containing `<object>` code, and `myPath`, which is the ID attribute of the `<path>` you wish to annimate. 
 
 {% highlight javascript %}
 {% raw %}
-var draw = function(){
-   // get the drivePath <path>
-   var path = svgDoc.getElementById("drivePath");
-   var length = path.getTotalLength();
-   // Clear any previous transition
-   path.style.transition = path.style.WebkitTransition = 'none';
-   // Set up the starting positions
-   path.style.strokeDasharray = length + ' ' + length;
-   path.style.strokeDashoffset = length;
-   // Trigger a layout so styles are calculated & the browser
-   // picks up the starting position before animating
-   path.getBoundingClientRect();
-   // Define our transition
-   path.style.transition = path.style.WebkitTransition =
-     'stroke-dashoffset 10s linear';
-   // make the path visible
-   path.style.strokeOpacity = '1';
-   // Go!
-   path.style.strokeDashoffset = '0';
+var draw = function(mySvgObj, myPath){
+  var svgObj, svgDoc;
+  // get the SVG by ID
+  svgObj = document.getElementById(mySvgObj);
+  svgDoc = svgObj.contentDocument;
+  // get the drivePath <path>
+  var path = svgDoc.getElementById(myPath);
+  var length = path.getTotalLength();
+  // Clear any previous transition
+  path.style.transition = path.style.WebkitTransition = 'none';
+  // Set up the starting positions
+  path.style.strokeDasharray = length + ' ' + length;
+  path.style.strokeDashoffset = length;
+  // Trigger a layout so styles are calculated & the browser
+  // picks up the starting position before animating
+  path.getBoundingClientRect();
+  // Define our transition 
+  path.style.transition = path.style.WebkitTransition =
+    'stroke-dashoffset 10s linear';
+  // make the path visible
+  path.style.strokeOpacity = '1';
+  // Go!
+  path.style.strokeDashoffset = '0';
 }
-window.onload = function(){	
-   draw();
-}
-{% endraw %} 
+{% endraw %}
 {% endhighlight %}
 
-This approach is explained by [Archibald][5]. The only modifications from his code are: selecting the path based on path ID ("drivePath"), changing the animation to be 10 seconds long and linear (`path.style.transition = path.style.WebkitTransition ="stroke-dashoffset 10s linear";`), and making the path show up (`path.style.strokeOpacity = "1";`). Playing around with the `path.style.transition` will allow you to customize the look of the line drawing itself and how long it takes to complete.
+As shown in the next section, we will start the animation with a button click, however, adding `window.onload = function(){ draw(); }` to the end of the JavaScript file will have the animation start as soon as the page loads. portion.  
 
-This code is added just after the opening `<svg>` tag. While it could be copied and pasted into the SVG, we used R to add the script. The `add_ecmascript` function could be added to the original R code, before the `toString.XMLNode` function. Or, as shown below, we read the SVG back in, add the JavaScript, and then save it again, in case you are copying and pasting the code from this page. `add_ecmascript` is from [the CRDV code][8].
+#### Modifications for Embedded JavaScript
+
+If the JavaScript is included in the SVG file, it should be placed just inside the opening `<svg>` tag. In this case, the `mySvgObj` argument, `svgObj` and `svgDoc` variables, and the two lines that set these variables can be eliminated. 
+
+While the JavaScript code could be copied and pasted into the SVG, we used R to add the script. The `add_ecmascript` function could be added to the original R code, before the `toString.XMLNode` function. Or, as shown below, we read the SVG back in, add the JavaScript, and then save it again, in case you are copying and pasting the code from this page. `add_ecmascript` is from [the CRDV code][8].
 
 {% highlight r %}
 
@@ -142,9 +158,6 @@ path.getBoundingClientRect();
 path.style.transition = path.style.WebkitTransition ="stroke-dashoffset 10s linear";
 path.style.strokeOpacity = "1";
 path.style.strokeDashoffset= "0";
-}
-window.onload = function(){	
-draw();
 }'
 )
 
@@ -156,45 +169,7 @@ svg <- svg %>% add_ecmascript(jsScript) %>% toString.XMLNode()
 cat(svg, file = paste0(svgOut), append = FALSE)
 {% endhighlight %}
 
-This entire SVG can then be copied into an HTML document, as shown [here][12]. 
-
-#### Referenced SVG and JavaScript
-
-In the alternative approach, we setup the JavaScript such that it expects the SVG to be referenced in `<object>` or `<iframe>` tags. The basic setup for referencing the SVG and JavaScript from an HTML document is:
-
-{% highlight html %}
-{% raw %}
-<object id="objID" data="/path/to/Animated.svg" type="image/svg+xml"></object>
-<script src="/path/to/AnimateCode.js"></script>
-{% endraw %}
-{% endhighlight %}
-
-_Note that I use the `<object>` tag to reference the SVG, but the same JavaScript should work if it is referenced using `<iframe>`._
-
-To reference the SVG from the HTML document, there are a few modifications to the JavaScript that are necesary to ensure the animation works. These are lines 2, 4, and 5 in the JavaScript below. We start by getting the containing document by its ID, and then get the contents of the document, before performing the same changes to the path's style attributes as above. Also, since the JavaScript file is referenced, it makes sense to make it more generic so that it can be reused. As shown below, it now accepts two arguements: `mySvgObj` which is the ID attribute of the containing `<object>` code, and `myPath`, which is the ID attribute of the `<path>` you wish to annimate. 
-
-{% highlight javascript linenos %}
-{% raw %}
-var draw = function(mySvgObj, myPath){
-  var svgObj, svgDoc;
-  // get the SVG by ID
-  svgObj = document.getElementById(mySvgObj);
-  svgDoc = svgObj.contentDocument;
-  var path = svgDoc.getElementById(myPath);
-  var length = path.getTotalLength();
-  path.style.transition = path.style.WebkitTransition = 'none';
-  path.style.strokeDasharray = length + ' ' + length;
-  path.style.strokeDashoffset = length;
-  path.getBoundingClientRect();
-  path.style.transition = path.style.WebkitTransition =
-    'stroke-dashoffset 10s linear';
-  path.style.strokeOpacity = '1';
-  path.style.strokeDashoffset = '0';
-}
-{% endraw %}
-{% endhighlight %}
-
-For the referenced JavaScript file, we also removed the `window.onload` portion. If desired, that could be added into the HTML document, or the JavaScript, but we removed it since the figure is going to appear a ways down the page, and I have not yet mastered any of the JavaScript libraries that tie the animations to scrolling. Instead, we added a button to make the call to `draw('driveRouteObj', 'drivePath')`. 
+This entire SVG can then be copied into an HTML document, as shown [here][12].
 
 ## Final Product
 
