@@ -51,9 +51,9 @@ The following sections detail these steps, and provide examples for all answers 
 
 Starting with the [SVG][9] we created in [Part 1][1], the first step is to add an ID attribute to the SVG `<path>` element that we want to animate. Because the path that I want to animate was the last item added to the SVG, I know that it will be the last `<path>` in the SVG. Without this knowledge, you will have to determine which path element should be animated by inspecting the original SVG file. 
 
-We start by getting the number of `<path>` elements that are in the SVG (`numPaths`), then name all but the last path "myPath[N]", and name the last path "drivePath" (`name_svg_elements`). drivePath is the element that we will animate. While the [Colorado River drought visualization (CRDV) project][2] provided the inspiration for this animation, it also provided an [example to follow and some code used to edit the SVGs][8]. `name_svg_elements.R` was adapted from [their version][8] and is available on [GitHub][10].
+We start by getting the number of `<path>` elements that are in the SVG (`numPaths`), then name all but the last path "myPath[N]" (not necessary), and name the last path "drivePath" (`name_svg_elements()`). drivePath is the element that we will animate. While the [Colorado River drought visualization (CRDV) project][2] provided the inspiration for this animation, it also provided an [example to follow and some code used to edit the SVGs][8]. `name_svg_elements.R` was adapted from [their version][8] and is available on [GitHub][10].
 
-At this point, we also decided that the figure should start without the path being visible. SVGs can contain either a single `style` attribute with all of the style settings, or, separate SVG attributes for each style setting. This SVG is setup using the former (as created by R's SVG device). It would be nicer to have the later, but we will leave it in this form. We parse the `style` attribute, find the `stroke-opacity` setting, set it to '0', and then recreate the full `style` attribute. All of this is taken care of in `editPathStyle()`. It is not shown here, since it is really an optional step, but it is available on [GitHub][10].
+At this point, we also decided that the figure should start with the path being invisible. SVGs can contain either a single `style` attribute with all of the style settings, or, separate SVG attributes for each style setting. This SVG is setup using the former (as created by R's SVG device). It would be nicer to have the later, but we will leave it in this form. We parse the `style` attribute, find the `stroke-opacity` setting, set it to '0', and then recreate the full `style` attribute. All of this is taken care of in `editPathStyle()`. It is not shown here, since it is really an optional step, but it is available on [GitHub][10].
 
 {% highlight r %}
 library(RCurl)
@@ -86,12 +86,12 @@ Now that the SVG has a `<path>` element with an ID set to "drivePath" we will us
 
 ### Animating the Path Using JavaScript
 
-At the beginning I noted there are two questions pertaining to how the SVG and JavaScript files will be structured. They are: 
+In the beginning, we noted there are two questions pertaining to how the SVG and JavaScript files will be structured. They are: 
 
 * Will the SVG be included directly in the html or referenced as an `<object>` or `<iframe>`?
 * Will the JavaScript be included within the `<svg>` tags, or referenced as a separate script?
 
-We will setup both the SVG and the JavaScript file to be referenced via `<object>` and `<script>` tags in the html, but will note how to edit the setup if the SVG is included in the html or the JavaScript is included within the `<svg>` tags.  
+We will setup the SVG and the JavaScript file to be referenced via `<object>` and `<script>` tags in the html, but will note how to edit the setup if the SVG is included in the html or the JavaScript is included within the `<svg>` tags.  
 
 As explained [here][11], the basis for creating the animation is that you are modifying the `stroke-dashoffset` and `stroke-dasharray` style settings, such that the line progressively appears, i.e., looks like it is drawing itself. To do this, we use a modified version of [Jake Archibald's][5] approach.
 
@@ -106,7 +106,7 @@ The basic setup for referencing the SVG and JavaScript from an HTML document is:
 
 _Note that I use the `<object>` tag to reference the SVG, but the same JavaScript should work if it is referenced using `<iframe>`._
 
-We follow [Archibald's][5] approach, with the following modifications. First, we get the containing document by its ID, and then get the contents of the document. Next, we select the path based on path ID ("drivePath"), and perform some changes to the path's style attributes. We change the animation to be 10 seconds long and linear (`path.style.transition = path.style.WebkitTransition ="stroke-dashoffset 10s linear";`), and make the path show up (`path.style.strokeOpacity = "1";`) since it is initially hidden. Playing around with the `path.style.transition` will allow you to customize the look of the line drawing itself and how long it takes to complete.
+We follow [Archibald's][5] approach, with the following modifications. First, we get the containing document,in this case the SVG file, by its ID, and then get the contents of the document (SVG file). Next, we select the path based on path ID ("drivePath"), and perform some changes to the path's style attributes. We change the animation to be 10 seconds long and linear (`path.style.transition = path.style.WebkitTransition ="stroke-dashoffset 10s linear";`), and make the path show up (`path.style.strokeOpacity = "1";`) since it is initially hidden. Playing around with the `path.style.transition` will allow you to customize the look of the line drawing itself and how long it takes to complete.
 
 Also, since the JavaScript file is referenced, it makes sense to make it generic so that it can be reused. As shown below, it accepts two arguments: `mySvgObj` which is the ID attribute of the containing `<object>` code, and `myPath`, which is the ID attribute of the `<path>` you wish to animate. 
 
@@ -186,11 +186,11 @@ After all this, we are left with the following map. Click the button to start th
 
 ## Final Thoughts
 
-The XML package can be leveraged to edit SVG files, including adding animations to the SVG. By identifying the `<path>` element you want to animate, naming it, and passing it to some JavaScript code, the path can be animated. While the demonstration here is a simplistic animation, the methodology will scale to more complex animations.
+The XML package can be leveraged to edit SVG files, including the ability to add animations to the SVG. By identifying the `<path>` element you want to animate, naming it, and passing it to some JavaScript code, the path can be animated. While the demonstration here is a simplistic animation, the methodology will scale to more complex animations.
 
-Instead of having the final map start by a button click, or on the page loading, it is preferable to have it run once the user has scrolled to the figure location. One of the scrolling animation JavaScript libraries, e.g., [ScrollMagic][13], is likely required to do this, and will be completed in the future since I am unfamiliar with them at this point.
+Instead of having the final map start with a button click, or on the page loading, it is preferable to have it run once the user has scrolled to the figure location. One of the scrolling animation JavaScript libraries, e.g., [ScrollMagic][13], is likely required to do this, and will be completed in the future since I am unfamiliar with them at this point.
 
-Finally, there are two existing R packages that could likely handle this animation. First, there is the [SVGAnnotation][18] R package, but it was last updated in 2012. Also, there is the [gridSVG][17] package that has an animate function, however, it uses SMIL animation on SVGs and according to [this post][16] SMIL is depreciated in Chrome. As such, we forged ahead using the XML package to handle the modifications to the SVG.
+Finally, there are two existing R packages that could likely handle this animation. First, there is the [SVGAnnotation][18] package, but it was last updated in 2012. Also, there is the [gridSVG][17] package that has an animate function, however, it uses SMIL animation on SVGs and according to [this post][16] SMIL is depreciated in Chrome. As such, we forged ahead using the XML package to handle the modifications to the SVG.
 
 ### Find the Code
 
