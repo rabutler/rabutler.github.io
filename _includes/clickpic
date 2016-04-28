@@ -1,0 +1,16 @@
+{% comment %}
+*
+* Used to include a picture at a decent size for blog post, that will open to full size
+* picture when it is clicked on. 
+* the include.pic should be a path to the figure 
+* IMPORTANT: it is assumed that it is stored in site.imgurl
+* include.orientation should either be h for horizontal, or v for vertical. This will determine the 
+* relative size of the figure.
+*
+{% endcomment %}
+
+<a class= "th" href="{{ site.urlimg }}{{ include.pic }}">
+	<img src="{{ site.urlimg }}{{ include.pic }}" 
+	width={% if include.orientation == "h" %} "100%" {% else %} "50%" {% endif %}
+	height={% if include.orientation == "h" %} "100%" {% else %} "50%" {% endif %}	/>
+</a>
