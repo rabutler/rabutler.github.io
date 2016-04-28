@@ -25,11 +25,17 @@ Getting to Balu Peak was relatively straight foward. We headed up the Connaught 
 
 # Crevas Rescue Practice
 
+{% include clickpic pic="rogers-pass/IMG_20160416_110131583.jpg" orientation="h" %}
+
+{% include clickpic pic="rogers-pass/IMG_20160415_145008204.jpg" orientation="v" %}
+			
 After exhausting me on day one, and looking at the weather forecast, we decided a mellow day practicing crevas rescue was in order. We had a casual start, headed up the pass, and found a rock to throw me off of, so Brent could practice catching me and pulling me up. After some lessons for me of what to do if Brent was the one that falls in, we packed up, and headed back to Golden to gameplan for the next day. 
 
 __A side note about the Rogers Pass backcountry skiing rules:__ To ski many areas of Rogers Pass in the winter, you have to get a ski permit from the Glacier National Park Rangers for the area you are going to ski. This is reasonable as there are over 140 active slide paths that cross the highway (trans Canadian highway 1) or the Canadian Pacific Railroad over Rogers Pass and they want to make sure you are skiing in relatively safe areas, and know where people are so they can blast away at the mountain. However, we did not realize that you could only obtain the permits in the morning of the day you leave. This was a pain since the ranger's station does not open until 7:30 am. While that is plenty early enough in the winter, given the high temperatures we were seeing, we needed to be on the trail much earlier than that. Mt. Belu did not require such a permit, so we were able to leave bright and early, but some of the other areas we wanted to ski did require these permits. Lucky for us, on April 15, they suspended "winter operations", which meant we no longer needed a permit for any of the areas. Yay for us! On to Avalanche Mountain we go!
 
 # Avalanche Mountain
+
+<img src="{{ site.urlimg }}rogers-pass/IMG_20160416_110131583.jpg" width="100%" height="100%" />
 
 - Parking lot elevation: 1,330 m (4,362 ft)
 - Summit elevation: almost 2,861 m (9,384 ft)
