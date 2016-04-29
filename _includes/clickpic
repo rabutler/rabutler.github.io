@@ -4,15 +4,20 @@
 * picture when it is clicked on. 
 * the include.pic should be a path to the figure 
 * IMPORTANT: it is assumed that it is stored in site.imgurl
+* include.caption is the caption text
 * include.orientation should either be h for horizontal, or v for vertical. This will determine the 
 * relative size of the figure.
 *
 {% endcomment %}
 
 {% if include.orientation == "h" %}
-<a class="th" href="{{ site.urlimg }}{{ include.pic }}">
-	<img src="{{ site.urlimg }}{{ include.pic }}" width="100%" height="100%" />
-</a>
+<div class ="row">
+	<a class="th" href="{{ site.urlimg }}{{ include.pic }}">
+		<img src="{{ site.urlimg }}{{ include.pic }}" width="100%" height="100%" />
+	</a>
+	<p class="masthead-caption"> {{ include.caption }} </p>
+</div>
+
 {% else %}
 <div class="row">
   <div class="large-3 columns"><p></p></div>
@@ -20,7 +25,9 @@
 	<a class="th" href="{{ site.urlimg }}{{ include.pic }}">
 		<img src="{{ site.urlimg }}{{ include.pic }}" width="100%" height="100%" />
 	</a>
+	<p class="masthead-caption"> {{ include.caption }} </p>
   </div>
   <div class="large-3 columns"></div>
 </div>
+
 {% endif %}
