@@ -9,6 +9,10 @@ tags:
 categories:
   - trips
 header: no
+image:
+    title: rogers-pass/IMG_20160419_082151715_HDR.jpg
+    caption: Brent, heading down Castor towards Pollux.
+    thumb: rogers-pass/IMG_20160419_082151715_HDR_thumb.jpg
 ---
 
 What do you do when you don't want to go back to work after spending the last seven months traveling? Well, for me, you use your brother's upcoming Ski Guide Exam in Canada as an excuse to head north, and get in some spring skiing. With the exam as our cover, Brent and I headed north for a week of skiing on Rogers Pass before his exam.
