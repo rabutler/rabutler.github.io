@@ -11,7 +11,7 @@ widget1:
   title: "My Trips"
   url: '/trips/'
   image: widget-trips-303x182.jpg
-  text: 'I like to travel. Check out some of the cool trips I have taken.'
+  text: 'Check out some of the cool trips I have taken.'
 widget2:
   title: "My Small Projects"
   url: '/projects/'
@@ -19,9 +19,9 @@ widget2:
   image: widget-projects-303x182.jpg
 widget3:
   title: "More About Me"
-  url: '/about-me/'
+  url: '/now/'
   image: widget-aboutMe-303x182.jpg
-  text: 'You can find out more about me here.'
+  text: 'Find out more about what I am up to now.'
 #
 # Use the call for action to show a button on the frontpage
 #
