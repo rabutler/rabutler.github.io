@@ -12,6 +12,8 @@
   dropdown:
   #- title: "Ultimate Tic-Tac-Toe"
   #  url: "/projects/ultimate-tic-tac-toe/"
+  - title: "Animated Route to Nicaragua"
+    url: "/projects/animated-drive-route-figure-only.html"
   - title: "Historical Mortgage Rates"
     url: "/projects/historical-mortgage-interest/"
 
