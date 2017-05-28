@@ -10,6 +10,8 @@
   url: "/projects/"
   side: right
   dropdown:
+  - title: "Boulder Daily Temps"
+    url: /projects/boulder-temps/
   #- title: "Ultimate Tic-Tac-Toe"
   #  url: "/projects/ultimate-tic-tac-toe/"
   - title: "Animated Route to Nicaragua"
