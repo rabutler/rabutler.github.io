@@ -214,7 +214,7 @@ __Full disclosure:__ _I was fortunate to be a part of the Colorado River Drought
 [9]: https://github.com/rabutler/animateNicaDrive/blob/master/driveRoute.svg
 [10]: https://github.com/rabutler/animateNicaDrive/blob/master/svgModFunctions.R
 [11]: https://css-tricks.com/svg-line-animation-works/
-[12]: /projects/animated-drive-route-figure-only.html
+[12]: /projects/animated-drive-route-figure-only/
 [13]: http://scrollmagic.io/
 [14]: https://github.com/rabutler/animateNicaDrive/
 [15]: https://github.com/rabutler/animateNicaDrive/blob/master/modifySVGForAnimation.R
