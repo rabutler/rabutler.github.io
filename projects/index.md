@@ -16,8 +16,10 @@ All of my small projects will appear here. There will almost always be a blog po
 
 ## Demonstration Projects
 
+* [Boulder Daily Temperatures][3]
 * [Animated Driving Route to Nicaragua][2]
 * [Historical Mortgage Interest Rates Analysis][1]
 
 [1]: /projects/historical-mortgage-interest/
 [2]: /projects/animated-drive-route-figure-only.html
+[3]: /projects/boulder-temps/
