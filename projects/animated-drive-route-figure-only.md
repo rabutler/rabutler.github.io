@@ -1,10 +1,8 @@
 ---
 layout: page-fullwidth
 permalink: "/projects/animated-drive-route-figure-only/"
+title: "Animated Route to Nicaragua"
 ---
-
-
-# Animated Route to Nicaragua
 
 <div id="driveRouteContainer">
 	
