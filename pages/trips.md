@@ -5,6 +5,6 @@ teaser: "Some fun trips I have taken."
 permalink: "/trips/"
 ---
 
-##Under Construction
+## Under Construction
 
 
