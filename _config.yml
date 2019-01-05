@@ -51,7 +51,7 @@ logo: "logo.png"
 #   /_/    \__,_/\__, /_/_/ /_/\__,_/\__/_/\____/_/ /_/
 #               /____/
 #
-gems: [jekyll-paginate]
+plugins: [jekyll-paginate]
 paginate: 5                      # Paginates all X entries
 paginate_path: "blog/page:num"   # Pagination path › Important for blog page in /blog/ to work
 
