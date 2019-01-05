@@ -16,7 +16,7 @@ I often think, and dream, about future technologies that will make our lives eas
 
 For more about what I'm up to right now, check out the [Now][1] page. You can also find me on GitHub, Instagram, and LinkedIn below. Or, you can [contact me here][2].
 
-{% include alert info='You will be able to find a link to my CV here at some future date. Until then, find me on <a href = "https://www.linkedin.com/in/alan-butler-63b11a28">LinkedIn</a>.' %}
+{% include alert info='You will be able to find a link to my CV here at some future date. Until then, find me on <a href = "https://www.linkedin.com/in/alan-butler-p-e-63b11a28">LinkedIn</a>.' %}
 
 [1]: /now/
 [2]: /contact/
